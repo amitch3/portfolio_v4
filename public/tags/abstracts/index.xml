@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>abstracts on Persian</title>
+    <link>https://www.example.com/tags/abstracts/</link>
+    <description>Recent content in abstracts on Persian</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="https://www.example.com/tags/abstracts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Publications</title>
+      <link>https://www.example.com/post/post-2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.example.com/post/post-2/</guid>
+      <description>“And I knew exactly what to do. But in a much more real sense, I had no idea what to do.” – Michael Scott.
+ Publications
+Articles
+Parr, Lisa A., Thomas Mitchell, and Erin Hecht. Intranasal oxytocin in rhesus monkeys alters brain networks that detect social salience and reward. American journal of primatology 80.10 (2018): e22915.
+Eric Feczko, TA Mitchell, Hasse Walum, Jenna M. Brooks, Thomas R. Heitz, Larry J.</description>
+    </item>
+    
+  </channel>
+</rss>

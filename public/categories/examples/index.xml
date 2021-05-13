@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>examples on Persian</title>
+    <link>https://www.example.com/categories/examples/</link>
+    <description>Recent content in examples on Persian</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="https://www.example.com/categories/examples/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>examples</title>
+      <link>https://www.example.com/post/examples/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.example.com/post/examples/</guid>
+      <description>Introductory BlurbBecause of time, I had to remove the code itself from this HTML document. I think I learned a solid lesson about choosing a proper Hugo Theme that will be best for my purposes. I really like the persian theme but it does not appear to be good for showing .rmd chunks for translating how the ggplot was generated below.
+I appreciate this lesson a great deal because I think this will be an extremely valuable way to present my CV and visualizations that I have made for lab and publications.</description>
+    </item>
+    
+  </channel>
+</rss>

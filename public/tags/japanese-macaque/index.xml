@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Japanese Macaque on Persian</title>
+    <link>https://www.example.com/tags/japanese-macaque/</link>
+    <description>Recent content in Japanese Macaque on Persian</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="https://www.example.com/tags/japanese-macaque/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Research</title>
+      <link>https://www.example.com/post/am_post-1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.example.com/post/am_post-1/</guid>
+      <description>My Research I am in the lab of Dr. Elinor Sullivan and co-mentored by Dr. Damien Fair at the Universtiy of Minnesota.
+My research focuses on understanding the effects of the overconsumption of a high-fat diet during pregnancy. Specifically, my work is dedicated to understanding how this effects fetal neurodevelopment and social outcomes.
+ I focus on understanding how diet and obesity impact the immune response during pregnancy, and then how these changes related to offspring social outcomes.</description>
+    </item>
+    
+  </channel>
+</rss>

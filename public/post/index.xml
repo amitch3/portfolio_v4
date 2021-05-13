@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts on Persian</title>
+    <link>https://www.example.com/post/</link>
+    <description>Recent content in Posts on Persian</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="https://www.example.com/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>examples</title>
+      <link>https://www.example.com/post/examples/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.example.com/post/examples/</guid>
+      <description>Introductory BlurbBecause of time, I had to remove the code itself from this HTML document. I think I learned a solid lesson about choosing a proper Hugo Theme that will be best for my purposes. I really like the persian theme but it does not appear to be good for showing .rmd chunks for translating how the ggplot was generated below.
+I appreciate this lesson a great deal because I think this will be an extremely valuable way to present my CV and visualizations that I have made for lab and publications.</description>
+    </item>
+    
+    <item>
+      <title>Publications</title>
+      <link>https://www.example.com/post/post-2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.example.com/post/post-2/</guid>
+      <description>“And I knew exactly what to do. But in a much more real sense, I had no idea what to do.” – Michael Scott.
+ Publications
+Articles
+Parr, Lisa A., Thomas Mitchell, and Erin Hecht. Intranasal oxytocin in rhesus monkeys alters brain networks that detect social salience and reward. American journal of primatology 80.10 (2018): e22915.
+Eric Feczko, TA Mitchell, Hasse Walum, Jenna M. Brooks, Thomas R. Heitz, Larry J.</description>
+    </item>
+    
+    <item>
+      <title>Research</title>
+      <link>https://www.example.com/post/am_post-1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.example.com/post/am_post-1/</guid>
+      <description>My Research I am in the lab of Dr. Elinor Sullivan and co-mentored by Dr. Damien Fair at the Universtiy of Minnesota.
+My research focuses on understanding the effects of the overconsumption of a high-fat diet during pregnancy. Specifically, my work is dedicated to understanding how this effects fetal neurodevelopment and social outcomes.
+ I focus on understanding how diet and obesity impact the immune response during pregnancy, and then how these changes related to offspring social outcomes.</description>
+    </item>
+    
+    <item>
+      <title>Water, Dogs, &amp; Bikes</title>
+      <link>https://www.example.com/post/post-3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.example.com/post/post-3/</guid>
+      <description> Whoaa - Keanu Reeves
+ </description>
+    </item>
+    
+  </channel>
+</rss>

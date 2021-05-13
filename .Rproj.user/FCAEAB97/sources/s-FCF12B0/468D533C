@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1620876106409.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "468D533C",
+    "lastKnownWriteTime" : 1620876004,
+    "last_content_update" : 1620876004,
+    "path" : "~/GitHub_Projects/portfolio_v4/content/post/examples.Rmd",
+    "project_path" : "content/post/examples.Rmd",
+    "properties" : {
+        "cursorPosition" : "2,21",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

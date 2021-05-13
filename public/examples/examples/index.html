@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+
+<head>
+  <meta charset="utf-8">
+  <title>examples</title>
+
+  <!-- mobile responsive meta -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="This is meta description">
+  <meta name="author" content="Themefisher">
+  <meta name="generator" content="Hugo 0.83.1" />
+
+  <!-- plugins -->
+  
+  <link rel="stylesheet" href="https://www.example.com/plugins/bootstrap/bootstrap.min.css">
+  
+  <link rel="stylesheet" href="https://www.example.com/plugins/themify-icons/themify-icons.css">
+  
+
+  <!-- Main Stylesheet -->
+  
+  <link rel="stylesheet" href="https://www.example.com/scss/style.css" media="screen">
+
+  <!--Favicon-->
+  <link rel="shortcut icon" href="https://www.example.com/images/favicon.png" type="image/x-icon">
+  <link rel="icon" href="https://www.example.com/images/favicon.png" type="image/x-icon">
+
+  
+  <meta property="og:image" content="https://www.example.com/images/post/20210508_124638.jpg" />
+  
+  <meta property="og:title" content="examples" />
+<meta property="og:description" content="Introductory BlurbBecause of time, I had to remove the code itself from this HTML document. I think I learned a solid lesson about choosing a proper Hugo Theme that will be best for my purposes. I really like the persian theme but it does not appear to be good for showing .rmd chunks for translating how the ggplot was generated below.
+I appreciate this lesson a great deal because I think this will be an extremely valuable way to present my CV and visualizations that I have made for lab and publications." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://www.example.com/examples/examples/" /><meta property="article:section" content="examples" />
+
+
+
+
+
+</head><body>
+<!-- preloader start -->
+<div class="preloader">
+  
+</div>
+<!-- preloader end -->
+<!-- navigation -->
+<header class="py-4">
+  <div class="container-fluid">
+    
+    <nav class="navbar navbar-expand-lg navbar-light">
+      <a class="navbar-brand" href="/">
+        
+        <img class="img-fluid" width="150px" src="https://www.example.com/images/macaque_silhouette.png" alt="Persian">
+        
+      </a>
+      <button class="navbar-toggler border-0" type="button" data-toggle="collapse" data-target="#navigation">
+        <i class="ti-menu"></i>
+      </button>
+
+      <div class="collapse navbar-collapse text-center" id="navigation">
+        <ul class="navbar-nav ml-auto">
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="https://www.example.com/">Home</a>
+          </li>
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="https://www.example.com/about">About</a>
+          </li>
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="https://www.example.com/categories/research/">Research</a>
+          </li>
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="https://www.example.com/categories/publications/">Publications</a>
+          </li>
+          
+          
+        </ul>
+
+        
+        <!-- search -->
+        <div class="search px-4">
+          <button id="searchOpen" class="search-btn"><i class="ti-search"></i></button>
+          <div class="search-wrapper">
+            <form action="/search" class="h-100">
+              <input class="search-box pl-4" id="search-query" name="s" type="search" placeholder="Type and hit enter...">
+            </form>
+            <button id="searchClose" class="search-close"><i class="ti-close text-dark"></i></button>
+          </div>
+        </div>
+        
+      </div>
+    </nav>
+  </div>
+</header>
+<!-- /navigation -->
+
+<section>
+  <div class="container-fluid">
+    <div class="post">
+      <img src="https://www.example.com/images/post/20210508_124638.jpg" class="img-fluid w-100" alt="examples">
+      <div class="post-content">
+        <div class="post-date">
+          <span>01</span>
+          <span>Jan</span>
+        </div>
+        <h2 class="post-title">examples</h2>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-sm">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <h1 class="mb-4">examples</h1>
+        <div class="content">
+
+
+<div id="introductory-blurb" class="section level2">
+<h2>Introductory Blurb</h2>
+<p>Because of time, I had to remove the code itself from this HTML document. I think I learned a solid lesson about choosing a proper <code>Hugo Theme</code> that will be best for my purposes. I really like the <code>persian</code> theme but it does not appear to be good for showing <code>.rmd</code> chunks for translating how the ggplot was generated below.</p>
+<p>I appreciate this lesson a great deal because I think this will be an extremely valuable way to present my CV and visualizations that I have made for lab and publications.</p>
+<p>I'll just be sure to pick a better theme for my needs next time : )</p>
+</div>
+<div id="canadian-turbine" class="section level2">
+<h2>Canadian Turbine</h2>
+<p>These data will be loaded in directly to avoid any loading errors from personal machines, and all functions will be from the tidyverse. This is the Candian Wind Turbine Data (<a href="https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-10-27/readme.md" class="uri">https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-10-27/readme.md</a>) from the Tidy Tuesday R dataset.</p>
+<p><strong>The snapshot below contains the variable informaion:</strong></p>
+<div class="figure">
+<img src="/images/post/turbine_info.PNG" alt="Candian Wind Turbine Dataset Variable Description" />
+<p class="caption">Candian Wind Turbine Dataset Variable Description</p>
+</div>
+</div>
+<div id="load-the-data" class="section level2">
+<h2>Load the Data</h2>
+<p>This looked better without the chunk but I thought the code was appropriate for the class. I would not <code>include</code> this chunk if this was not for course review.</p>
+<pre class="r"><code># loading the csv directly from the site
+wind_turbine &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-10-27/wind-turbine.csv&#39;)</code></pre>
+</div>
+<div id="tidy-the-data" class="section level2">
+<h2>Tidy the Data</h2>
+<p>This looked better without the chunk but I thought the code was appropriate for the class. I would not <code>include</code> this chunk if this was not for course review.</p>
+<pre class="r"><code># make characters to factors for easier grouping
+wind_turbine &lt;- wind_turbine %&gt;%
+  mutate_if(is.character,as.factor)
+
+#glimpse(wind_turbine) # there are almost 7000 turbines in this data, across 12 Canadian providences
+
+# removing unwated variables
+selected_wind_turbines &lt;- wind_turbine %&gt;%
+  select(-notes,
+         -longitude,
+         -latitude,
+         -turbine_identifier,
+         -turbine_number_in_project)
+
+# creating arbitrary but even categories
+selected_wind_turbines &lt;- selected_wind_turbines %&gt;% 
+  mutate(capacity_category = ntile(turbine_rated_capacity_k_w, 6))
+
+# creating ratings variable
+
+selected_wind_turbines &lt;- selected_wind_turbines %&gt;%
+  mutate(capacity_rating = case_when(capacity_category == 1 ~ &quot;low&quot;,
+                                     capacity_category == 2 ~ &quot;below_average&quot;,
+                                     capacity_category == 3 ~ &quot;average&quot;,
+                                     capacity_category == 4 ~ &quot;above_average&quot;,
+                                     capacity_category == 5 ~ &quot;high&quot;))
+# assigning levels to new variable -
+## makes visualizaions easier laer on
+
+selected_wind_turbines$capacity_rating &lt;- factor(selected_wind_turbines$capacity_rating,
+                                 levels = c(&quot;low&quot;,
+                                            &quot;below_average&quot;,
+                                            &quot;average&quot;,
+                                            &quot;above_average&quot;,
+                                            &quot;high&quot;))
+
+#view
+#glimpse(selected_wind_turbines)</code></pre>
+</div>
+<div id="plotting-the-data" class="section level2">
+<h2>Plotting the data</h2>
+<p>This looked better without the chunk but I thought the code was appropriate for the class. I would not <code>include</code> this chunk if this was not for course review.</p>
+<p>The <code>ggplot</code> colors are <em>loosely</em> based on the uniforms the <code>Portland Trailblazers</code> were wearing on 5/11/21 when they played the Houston Rockets.</p>
+<pre class="r"><code># plotting the data
+selected_wind_turbines %&gt;%
+  filter(!capacity_rating == &quot;NA&quot;) %&gt;%
+  filter(!province_territory %in% c(&quot;Manitoba&quot;, # removing those with low turbines
+                                    &quot;Northwest Territories&quot;,
+                                    &quot;Newfoundland and Labrador&quot;,
+                                    &quot;Yukon&quot;,
+                                    &quot;New Brunswick&quot;)) %&gt;%
+  ggplot(aes(x=hub_height_m,
+             y=rotor_diameter_m,
+             size=total_project_capacity_mw),
+         alpha = .8) +
+  geom_jitter(aes(color=capacity_rating)) +
+  theme_dark() +
+  theme(plot.background = element_rect(fill = &quot;dimgrey&quot;)) +
+  theme(axis.text = element_text(colour = &quot;black&quot;,
+                                 face = &quot;bold&quot;)) +
+  guides(size = FALSE) +
+  theme(legend.background = (element_rect(fill = &quot;grey71&quot;))) +
+  scale_color_brewer(palette=&quot;Set3&quot;) +
+  scale_size(range = c(0, 10)) +
+  labs(x=&quot;Turbine Height (m)&quot;,
+       y=&quot;Rotor Diameter (m)&quot;,
+       color = &quot;Ranking&quot;,
+       title = &quot;Candian Turbine Output Capacity&quot;,
+       subtitle = &quot;Relative to Turbine Height and Weight&quot;) +
+  theme(axis.title.x = element_text(size=14, face=&quot;bold&quot;, colour = &quot;black&quot;)) +
+  theme(axis.title.y = element_text(size=14, face=&quot;bold&quot;, colour = &quot;black&quot;)) </code></pre>
+<p><img src="/examples/examples_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+</div>
+
+        <div class="text-center mt-5">
+          <ul class="list-inline post-meta d-inline-block mr-4">
+            <li class="list-inline-item"><i class="ti-tag"></i></li>
+            
+          </ul>
+          <span><i class="ti-user mr-2"></i><a
+              href="/author/aj-mitchell/">AJ Mitchell</a></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<footer class="py-4">
+  <div class="container text-center">
+    <p>Designed By <a href="https://themefisher.com/">Themefisher</a> &amp; Developed By <a href="https://gethugothemes.com/">Gethugothemes</a></p>
+  </div>
+</footer>
+
+<!-- Search index -->
+
+<script>
+  var indexURL = "https://www.example.com/index.json"
+</script>
+
+
+
+<!-- JS Plugins -->
+
+<script src="https://www.example.com/plugins/jQuery/jquery.min.js"></script>
+
+<script src="https://www.example.com/plugins/bootstrap/bootstrap.min.js"></script>
+
+<script src="https://www.example.com/plugins/search/fuse.min.js"></script>
+
+<script src="https://www.example.com/plugins/search/mark.js"></script>
+
+<script src="https://www.example.com/plugins/search/search.js"></script>
+
+
+<!-- Main Script -->
+
+<script src="https://www.example.com/js/script.min.js"></script>
+
+<!-- google analitycs -->
+
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-cookie/2.2.1/js.cookie.min.js"></script>
+<div id="js-cookie-box" class="cookie-box cookie-box-hide">
+	This site uses cookies. By continuing to use this website, you agree to their use. <span id="js-cookie-button" class="btn btn-sm btn-primary ml-2">I Accept</span>
+</div>
+<script>
+	(function ($) {
+		const cookieBox = document.getElementById('js-cookie-box');
+		const cookieButton = document.getElementById('js-cookie-button');
+		if (!Cookies.get('cookie-box')) {
+			cookieBox.classList.remove('cookie-box-hide');
+			cookieButton.onclick = function () {
+				Cookies.set('cookie-box', true, {
+					expires:  2 
+				});
+				cookieBox.classList.add('cookie-box-hide');
+			};
+		}
+	})(jQuery);
+</script>
+
+
+<style>
+.cookie-box {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  text-align: center;
+  z-index: 9999;
+  padding: 1rem 2rem;
+  background: rgb(71, 71, 71);
+  transition: all .75s cubic-bezier(.19, 1, .22, 1);
+  color: #fdfdfd;
+}
+
+.cookie-box-hide {
+  display: none;
+}
+</style>
+</body>
+
+</html>
