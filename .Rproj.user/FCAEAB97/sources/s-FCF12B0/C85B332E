@@ -5,15 +5,15 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "3717890409",
+    "hash" : "727883152",
     "id" : "C85B332E",
-    "lastKnownWriteTime" : 1620875037,
-    "last_content_update" : 1620875037262,
+    "lastKnownWriteTime" : 1620881578,
+    "last_content_update" : 1620881578794,
     "path" : "~/GitHub_Projects/portfolio_v4/config.yaml",
     "project_path" : "config.yaml",
     "properties" : {
-        "cursorPosition" : "57,15",
-        "scrollLine" : "33"
+        "cursorPosition" : "1,14",
+        "scrollLine" : "0"
     },
     "relative_order" : 9,
     "source_on_save" : false,
