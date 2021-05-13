@@ -5,7 +5,7 @@ image: images/IMG-4947.jpg
 title: AJ Mitchell 4th Graduate Student; PhD Candidate _Mentor:_ Dr. Elinor Sullivan 
 ---
 
-I am originally from a small town of Rome Georgia, just over an hour outside of Atlanta. I attended the University of West Georgia in 2011 and briefly attended graudate school in the Psychology Department. In 2012, I moved to Atlanta to pursue my inerest in biomedical research and began volunteering at Yerkes National Primate Research Institute at Emory University. I worked for Dr. Lisa Parr for 4 years studying the effects of intranasal oxyctocin on social and attentional salience in rhesus macaques. As my project was wrapping up, I began applying to graduate school across the country. I now am a PhD candidate in the departmnet of Behavioral Neuroscience at OHSU in my fouth year.  
+I am originally from a small town of Rome Georgia, just over an hour outside of Atlanta. I attended the University of West Georgia and graduated in 2011; I briefly attended graudate school in the Psychology Department. In 2012, I moved to Atlanta to pursue my inerest in biomedical research and began volunteering at Yerkes National Primate Research Institute at Emory University. I worked for Dr. Lisa Parr for 4 years studying the effects of intranasal oxyctocin on social and attentional salience in rhesus macaques. As my project was wrapping up, I began applying to graduate school across the country. I now am a PhD candidate in the departmnet of Behavioral Neuroscience at OHSU in my fouth year.  
 
 
 <br>
