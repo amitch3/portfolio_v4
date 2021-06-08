@@ -12,10 +12,5 @@ tags:
 title: 'Water, Dogs, & Bikes'
 ---
 
-![ greenery from the most recent venture](/images/post/20210508_111200.jpg)
-
-
-
-> Whoaa - Keanu Reeves
 
 

@@ -1,0 +1,110 @@
+---
+author: AJ Mitchell
+categories:
+- Top Labs
+description: Lab Brief Visualization.
+draft: false
+image: images/post/lab_brief_img.png
+tags:
+- west coast wine
+- Brief Lab
+title: 'Lab Brief'
+---
+
+# Introduction 
+
+In the original lab, I was interested in showing that California wines are priced higher than Oregon Wines, but are not rated as well. My goal was to show that California wines are overpriced. 
+
+This information was for a general audience, particularly someone is struggling in the wine section at Fred Meyer (bc we all buy wine from Fred Meyer, right?). Example images of the lab can be found below.. 
+
+## Figures from original Lab
+
+
+- California wines are more expensive but doesn't give much insight into the rating of the wine
+
+![Differences in the average quality and pricing of wines from California and Oregon](/images/post/lab_brief_img.jpg)
+
+
+- In the reevaluation of the data, let's make a visualization that provides more insight for the general population
+
+
+# Reevaluating Over Priced West Coast Wines
+
+## Loading the Data
+
+```{r}
+# loading the tidytuesday data
+
+wine_ratings <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-05-28/winemag-data-130k-v2.csv")
+
+```
+
+## wrangling the data
+
+The data is already "cleaned" according to the `clean_names` function within the janitor package, so I don't have to do much below apart from assigning and selecting variables of interest for the visualization. 
+
+
+```{r}
+# removing variables of un-interest
+
+wine_ratings_selecvars <- wine_ratings %>%
+  select(-X1, -taster_name, -taster_twitter_handle, -description)
+
+#glimpse(wine_ratings_selecvars)
+
+
+# what are unique values for original variables in wine data:
+# designation has 36980 unique values
+# 43 total countries included
+# ~ 1230 region_1s
+# ~ 16 region 2s
+# ~ 425 provinces
+# ~ 708 varieties of wine
+# ~ 17000 wineries
+
+
+# based on these numbers, lets select out wines from the selected region / coast
+# I'm going only going to visualize wines from regions within California and Oregon
+
+wine_ratings_selecvars <- wine_ratings_selecvars %>%
+  mutate(coast = case_when(
+    str_detect(region_2 , "Napa|Sonoma|California Other|Sierra Foothills|Napa-Sonoma") ~ "Cali",
+    str_detect(region_2, "Willamette Valley|Oregon Other|Southern Oregon|Washington Other|Columbia Valley") ~ "PNW",
+    str_detect(region_2, "New York Other|Finger Lakes|Long Island") ~ "NorEa",
+    str_detect(region_2, "North Coast") ~ "NorCo",
+    str_detect(region_2, "South Coast") ~ "SoCo",
+    str_detect(region_2, "Central Coast") ~ "CenCo",
+    TRUE ~ "Other"))
+
+
+
+# note that we have no nasty wines in this data based on rankings from WineSearcher.com
+
+wine_ratings_selecvars <- wine_ratings_selecvars %>%
+  mutate(rating_class = case_when(points <= 70 ~ "Ewwuhh",
+                                  points >= 71 &
+                                    points <= 79 ~ "Meh",
+                                  points >= 80 &
+                                    points <= 84 ~ "Everyday Sipper",
+                                  points >= 85 & 
+                                    points <= 89 ~ "Fancy",
+                                  points >= 90 &
+                                    points <= 95 ~ "Very Fancy",
+                                  points >= 96 &
+                                    points <= 100 ~ "Top Shelf"))
+
+
+# assigning levels for visualization order
+wine_ratings_selecvars$rating_class  <- factor(wine_ratings_selecvars$rating_class, levels = c("Ewwuhh",
+                                                          "Meh", 
+                                                          "Everyday Sipper",
+                                                          "Fancy",
+                                                          "Very Fancy",
+                                                          "Top Shelf"))
+# price per point 
+# something that I did not do here was divide the ratio by the average price and average rating - that may be more informative
+wine_ratings_selecvars <- wine_ratings_selecvars %>%
+  mutate(pp_ratio = points/price)
+
+```
+

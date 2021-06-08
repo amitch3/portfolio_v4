@@ -1,0 +1,100 @@
+---
+author: AJ Mitchell
+categories:
+- Top Labs
+description: Lab Brief Visualization.
+draft: false
+image: images/post/color_lab_title.png
+tags:
+- color lab
+- lab 03
+title: 'The Color Lab'
+---
+
+# Introduction 
+
+Using the Washington Trails (https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-11-24/readme.md) from a TidyTuesday challenge, I sought to determine if the hikes that have the highest points are the best rated. 
+
+## Figures from first labs
+
+The figure below shows that the highest density of top rated hikes corresponds with higher peaks. However, it looks like once you get to a high enough peak, the trade off quickly wears off. Which makes since when you think about it as once you get above the trees line the view does not change. 
+
+FYI - The _Alpine Zone_ marks the tree lines, and this zone varies from state to state. In Washington State, the average Tree line is 5,000 to 6,000. To me, this suggests that, if I want to narrow down the best hikes in each state quickly, I should look for the beginning of the Alpine zone within each state.  
+
+**I plan to zoom in on this _Apline Zone_ and identify a few hikes (or make it interactive)** 
+
+![Differences in the average quality and pricing of wines from California and Oregon](/images/post/washington_hikes.png)
+
+## Final Figure - Top Hikes for Doggos
+
+I expanded on the analysis on finding the top hikes for dogs in Washington. I just liked this one bc dogs, I will not be expanding or editing it. 
+
+![Differences in the average quality and pricing of wines from California and Oregon](/images/post/top_wash_hikes_dogs.png)
+
+
+# Final Project: Enhancing the Colors Labs
+
+```{r}
+library(tidyverse)
+library(tidytuesdayR)
+```
+
+
+
+## loading the data 
+
+```{r}
+# loading the Washington Trails data
+tuesdata <- tidytuesdayR::tt_load(2020, week = 48)
+
+wash_hikes <- tuesdata$hike_data
+
+```
+
+## adjusting variables categories for visualization
+
+```{r}
+# setting variables to numerics and factors for visualization 
+
+wash_hikes$name <- as.factor(wash_hikes$name)
+wash_hikes$gain <- as.numeric(wash_hikes$gain)
+wash_hikes$highpoint <- as.numeric(wash_hikes$highpoint)
+
+# mutating rating to create categories and factor levels
+wash_hikes <- wash_hikes %>%
+  mutate(score = case_when(rating <= 1.99 ~ 'no-go',
+                           rating >= 2.00 & 
+                            rating <= 3.99 ~ 'meh',
+                           rating >=4.00 ~ 'yas!'))
+
+wash_hikes$score <- factor(wash_hikes$score, levels = c("no-go",
+                             "meh",
+                             "yas!"))
+
+wash_hikes <- wash_hikes %>%
+  mutate(height_class = ntile(highpoint, 4))
+
+wash_hikes$height_class <- as.factor(wash_hikes$height_class)
+```
+
+```{r}
+
+wash_hikes %>%
+  names()
+
+wash_hikes %>%
+  
+  ggplot(aes(y=highpoint,
+             x=rating,
+           fill= name)) +
+  #geom_density(alpha=.5) + 
+  geom_point() +
+ # scale_fill_manual(values = c("#ff9966",
+ #                              "#CC00CC",
+ #                               "#3333CC")) +
+  labs(x= "Peak Above Sea Level",
+       y = "Density Value",
+       title="Distribution of Peak Heights of Washington Hikes and their Rating",
+       fill = "Rating") 
+```
+

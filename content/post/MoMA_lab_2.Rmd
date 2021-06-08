@@ -1,0 +1,128 @@
+---
+title: "MoMA"
+author: "AJ Mitchell"
+description: This is meta description.
+draft: no
+image: images/post/moma_paintings_title.png
+tags:
+- MoMA
+- lab 2
+- gifted
+categories: Top Labs
+---
+
+# Introduction
+
+This post is from the MoMA lab. I found it interesting in that lab that no paintings were purchased from Africa and few were purchased from South American or Middle Eastern countries. This strikes me as a classic American bias where America makes up something that it alone is good at and forces that standard on global society. 
+
+I personally think there should be a reinvention on what is modern art and this definition should be more inclusing of the aforementioned countries. 
+
+
+![Differences in the average quality and pricing of wines from California and Oregon](/images/post/paintings_in_moma.png)
+
+![Differences in the average quality and pricing of wines from California and Oregon](/images/post/purchased_paintings_moma.png)
+
+![Differences in the average quality and pricing of wines from California and Oregon](/images/post/gifted_paintings_from_moma.png)
+
+
+## Revisiting the MoMA
+
+```{r}
+library(tidyverse)
+library(readxl)
+```
+
+
+
+```{r}
+artworks_cleaned <- read_csv("static/post/MoMA_lab_2/artworks-cleaned.csv",
+                             col_types = cols(artist_gender = col_factor(levels = c("Male",
+                                                                                    "Female"))))
+
+artist_by_country_cl <- artworks_cleaned %>% 
+  separate(col = artist_bio,
+           c("NArmv","birth_country"))
+
+# removing the extra row that is created with 'sep'
+
+artist_by_country_cl <- artist_by_country_cl %>%
+  dplyr::select(!NArmv)
+```
+
+## wrangling the data
+
+```{r}
+artist_by_country_cl <- artist_by_country_cl %>%
+  mutate(decade_acquired = case_when(year_acquired <= 1939 ~ "Thirties",
+                            year_acquired >= 1940 &
+                              year_acquired <= 1949 ~ "Forties",
+                            year_acquired >= 1950 &
+                              year_acquired <= 1959 ~ "Fifties",
+                            year_acquired >= 1960 & 
+                              year_acquired <= 1969 ~ "Sixties",
+                              year_acquired >= 1970 &
+                            year_acquired <= 1979 ~ "Seventies",
+                            year_acquired >= 1980 &
+                              year_acquired <= 1989 ~ "Eighties",
+                            year_acquired >= 1990 &
+                              year_acquired <= 1999 ~ "Ninties",
+                              year_acquired >= 2000 &
+                              year_acquired <= 2009 ~ "Two_Thousands",
+                            year_acquired >= 2010 ~ "2010_Present"))
+
+# this factor will need levels
+
+artist_by_country_cl$decade_acquired  <- factor(artist_by_country_cl$decade_acquired,
+          levels = c("Thirties",
+                     "Forties",
+                     "Fifties",
+                     "Sixties",
+                     "Seventies",
+                     "Eighties",
+                     "Ninties",
+                     "Two_Thousands",
+                     "2010_Present"))
+```
+
+## Factors and birth countries 
+
+```{r}
+
+artist_by_country_cl <- artist_by_country_cl %>%
+  mutate(continent = case_when(str_detect(birth_country, "Spanish|German|French|Italian|Danish|Dutch|British|Belgian|Swiss|Swedish|Irish|Icelandic|Norwegian") ~ "Western Europe",
+                             str_detect(birth_country, "Polish|Austrian|Czech|Ukrainian|Romanian|Hungarian|Croatian") ~ "Eastern Europe",
+                             str_detect(birth_country, "Israeli|Argentine|Iranian|Turkish") ~ "Middle East",
+                             str_detect(birth_country, "American|Haitian|Canadian|Cuban") ~ "North America", 
+                             str_detect(birth_country, "Mexican|Brazilian|Nicaraguan|Chilean|Guatemalan|Uruguayan|Peruvian|Guyanese|Bolivian|Venezuelan|Colombian") ~ "South America",
+                             str_detect(birth_country, "Sudanese | Moroccan|Tanzanian|Zimbabwean|Congolese|South") ~ "Africa",
+                             str_detect(birth_country, "Japanese|Korean|Indian" ) ~ "Asia", 
+                             str_detect(birth_country, "Russian") ~ "Russia",
+                             str_detect(birth_country, "Australian") ~ "Australia",
+                             str_detect(birth_country, "NA") ~ "Other"))
+
+# setting birth_country as factor
+
+artist_by_country_cl$birth_country <- as.factor(artist_by_country_cl$birth_country)
+
+# setting acquired_alive as factor
+
+artist_by_country_cl$acquired_alive <- as.factor(artist_by_country_cl$acquired_alive)
+
+# setting decade_acquired as factor
+
+artist_by_country_cl$decade_acquired <- as.factor(artist_by_country_cl$decade_acquired)
+
+# setting continent as factor
+
+artist_by_country_cl$continent <- as.factor(artist_by_country_cl$continent)
+
+# glimpse the data to make sure rows are appropriate. 
+
+glimpse(artist_by_country_cl) %>%
+  head()
+
+```
+
+## isolating countries of interest (Africa, South America, Middle Eastern)
+
+Lets just ID the paintings

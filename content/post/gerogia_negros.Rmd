@@ -1,0 +1,31 @@
+---
+title: "examples"
+author: "AJ Mitchell"
+date: "May 9, 2021"
+image: images/post/20210508_124638.jpg
+categories:
+  - examples
+output:
+  html_document: default
+  pdf_document: default
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r, include=FALSE, message=TRUE, warning=FALSE}
+library(tidyverse)
+library(knitr)
+```
+
+
+# Introduction
+
+```{r}
+
+```
+
+#

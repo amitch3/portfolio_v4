@@ -16,7 +16,17 @@ title: Publications
 
 > “And I knew exactly what to do. But in a much more real sense, I had no idea what to do.” – Michael Scott.
 
+
 **Publications**
+
+**Book Chapters**
+
+
+
+**The Influence of Maternal High Fat Diet Consumption on Neurobehavioral Development** 
+AJ Mitchell, Matthew Selby, and Elinor L Sullivan
+The Neuroscience of Development (January 2021)
+
 
 
 **Articles**
@@ -45,11 +55,4 @@ Eric Feczko & Thomas AJ Mitchell, Hasse Walum, Thomas R. Heitz, Lisa A. Parr. **
 
 
 
-**Book Chapters**
-
-
-
-**The Influence of Maternal High Fat Diet Consumption on Neurobehavioral Development** 
-AJ Mitchell, Matthew Selby, and Elinor L Sullivan
-The Neuroscience of Development (2020 - in publication)
 
