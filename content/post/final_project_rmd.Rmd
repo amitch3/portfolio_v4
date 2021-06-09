@@ -22,9 +22,7 @@ My research focuses on understanding the impact of Western Style Diet on brain d
 
 ![Mitchell 2021](/images/post/fig3_mWSD.png)
 
-A stacked barchart is used to convey the information, and I felt this was best because it conveys several bits of information within one 'swoop'. It's kind of difficult to look at at first, but once you understand what the colors are, i think it becomes very intuitive. The `green` represents the average caloric contribution _(based on a 2000 calorie diet)_ of the food category, and the colors represent how much sugar (`blue`), and how much saturated fat (`red`) contributes to percentage in `green`. There are other contributors that have been excluded (like protein) that account for the extra space. 
-
-
+A **stacked barchart** is used to convey the information, and I felt this was best because it conveys several bits of information within one 'swoop'. It's kind of difficult to look at at first, but once you understand what the colors are, i think it becomes very intuitive. The `green` represents the average caloric contribution _(based on a 2000 calorie diet)_ of the food category, and the colors represent how much sugar (`blue`), and how much saturated fat (`red`) contributes to percentage in `green`. There are other contributors that have been excluded (like protein) that account for the extra space. 
 
 
 ```{r, warning = FALSE, message=FALSE, echo = FALSE}
@@ -33,7 +31,7 @@ library(readxl)
 library(fmsb)
 ```
 
-# Loading the fast food data
+# Loading the Fast Food dataset
 
 So, we know the data came from a TidyTuesday challenge, but where did they get it from?
 
@@ -54,14 +52,14 @@ fastfood_calories <- tuesdata_FF$fastfood_calories
 #unique(fastfood_calories$restaurant)
 ```
 
-# Information for the general public
+# Informing the General Public
 
-The purpose of this is to create a simple, yet informative figure that conveys the amount of saturated fats and sugars within each of the common fast food items.  Nutrition and neuroscience literature has shown that the factors that impact brain function are the increased sugars and additional saturated fats.
+The purpose of this is to create a simple, yet informative figure that **conveys the amount of saturated fats and sugars within each of the common fast food items**.  Nutrition and neuroscience literature has shown that the factors that impact brain function are the increased sugars and additional saturated fats.
 
 Below, I have listed out the ways the metrics were calculated. These methods were based on information collected from the Seattle School Districts evaluating healthy lunch items in school children. The PDF can be found [here](http://district.schoolnutritionandfitness.com/visaliausd/files/SB12Howtocalculatefat.pdf).
 
 
-## calculating calories from saturated fats 
+# Calculating Calories from Saturated Fats 
 
 
 $$(saturated fat (*9) / total calories) * 100 = saturated fat contribution (percent)$$
@@ -91,20 +89,30 @@ fastfood_calories <- fastfood_calories %>%
 ```
 
 
+# Creating Categories
 
+According to NIH, you should limit saturated fat to less than 10% of your daily calories. So to find out which foods contribute the most saturated fats and/or sugars, we have to create food categories for the food items.  
 
-According to NIH, you should limit saturated fat to less than 10% of your daily calories. So which foods contribute the most saturated fats? To see this, we have to create food categories. 
+**Fast food items have been broken down into 9 categories:**
 
-Fast food items have been broken down into 9 categories:
  - salad 
+ 
  - burger 
+ 
  - sandwich 
+ 
  - tendies 
+ 
  - hot dog 
+ 
  - taco 
+ 
  - burrito 
- - pizza 
+ 
+ - pizza
+ 
  - other
+ 
 
 
 ```{r}
@@ -162,7 +170,7 @@ fastfood_calories$salad_cat <- factor(fastfood_calories$salad_cat,
 
 # manipulations for visualizations
 
-Below there are several manippulations that need to be made in order to group the data properly for visualizations. 
+Below there are several manippulations that need to be made in order to group the data properly for visualizations. In these chunks, the data has has been put into `long format` to help with visualizations. Additionally, new groups and factor levels had to be added for ordering. 
 
 
 ```{r}
@@ -238,11 +246,11 @@ mlt_summarized_ff$proper_name <- factor(mlt_summarized_ff$proper_name,
                                                      "Sugar"))
 ```
 
-# Plotting the data
+# 'Final' Plot the Fast Food data
 
 Within the data below, I have isolated out the contributions of **saturated fats** and **added sugars** to the **total (daily) caloric contribution** to the food. For example, _tendies_ predominately referes to chicken and includes nuggets, tenders, and strips. You'll notice that they contribute a large amount to the daily calorie count. Why is this? Is it because they come in 60 piece packages or because of large amounts of dense protein. 
 
-```{r, fig.height = 7, fig.width = 7}
+```{r, fig.height = 6, fig.width = 9}
 
 # plotting the data
 mlt_summarized_ff_wchain %>%
