@@ -1,29 +1,33 @@
 ---
-title: "MoMA"
+title: "Final Project: Saturated Fats and Sugars Calories in American Fast Food"
 author: "AJ Mitchell"
 description: This is meta description.
 draft: no
-image: images/post/moma_paintings_title.png
+image: images/post/ffdiet.jpg
 tags:
-- MoMA
-- lab 2
-- gifted
+- Western Style Diet
+- Calories from fat
+- Calories from Sugar
 categories: Top Labs
 ---
 
 # Introduction
 
-My final project will investigate the caloric contributions from fast food restaurant. These data come from the 2018 TidyTuesday Dataset title **Fast Food Calories**. This is for the general public, and to expand on what was started in the franchise opportunity website. If you follow the link to look at where the data was used (https://www.franchiseopportunities.com/blog/general-franchise-information/fast-food-calorie-comparison-charts), you can see that they predominantly look at caloric content of each food item. This is a very zoomed out perspective, and doesn't offer much insight into the nutritional value of the fast food items. I also did not care to break down by restaurant at this level but have ideas about how to capture it. 
+My final project will investigate the caloric contributions from fast food restaurant. These data come from the 2018 TidyTuesday Dataset title **Fast Food Calories**. This is for the general public, and to expand on what was started in the franchise opportunity website. If you follow the link to look at where the data was used [here](https://www.franchiseopportunities.com/blog/general-franchise-information/fast-food-calorie-comparison-charts), you can see that they predominantly look at caloric content of each food item. This is a very zoomed out perspective, and doesn't offer much insight into the nutritional value of the fast food items. I also did not care to break down by restaurant at this level but have ideas about how to capture it.
+
+![*Zalad not Included](/images/post/wheresthezalad.png)
 
 My research focuses on understanding the impact of Western Style Diet on brain development. Specifically, I study how consuming this diet during pregnancy can impact brain development and behavioral outcomes. We have learned that the increased levels of saturated fats and the additional sugars within the WSD are strongly related to differences in brain development and behavioral outcomes of children. So, iin order to expand, I wanted to identify which foods have higher amounts of sugars and saturated fats. 
 
 
-A stacked barchart is used to convey the information, and I felt this was best because it conveys several bits of information within one 'swoop'. It's kind of difficult to look at at first, but once you understand what the colors are, i think it becomes very intuitive. The `green` represents the average caloric contribution _(based on a 2000 calorie diet)_ of the food category, and the colors represent how much sugar (`blue`), and how much saturated fat (`red`) contributes to percentage in `green`. There are other contributors that have been excluded (like protein) that account for the extra space. What I hope to do with this final project is walk through each step and get to the ultimate outcome. 
+![Mitchell 2021](/images/post/fig3_mWSD.png)
+
+A stacked barchart is used to convey the information, and I felt this was best because it conveys several bits of information within one 'swoop'. It's kind of difficult to look at at first, but once you understand what the colors are, i think it becomes very intuitive. The `green` represents the average caloric contribution _(based on a 2000 calorie diet)_ of the food category, and the colors represent how much sugar (`blue`), and how much saturated fat (`red`) contributes to percentage in `green`. There are other contributors that have been excluded (like protein) that account for the extra space. 
 
 
 
 
-```{r}
+```{r, warning = FALSE, message=FALSE, echo = FALSE}
 library(tidyverse)
 library(readxl)
 library(fmsb)
@@ -33,13 +37,10 @@ library(fmsb)
 
 So, we know the data came from a TidyTuesday challenge, but where did they get it from?
 
-The author of this challenge used some web scraping techniques (that had to be deleted at the request of the publisher) to gather information from https://fastfoodnutrition.org/.
-
-You can find information about all kinds of food items like this by checking out the site. It can be super useful for making road trips healthier : ) 
+The author of this challenge used some web scraping techniques (that had to be deleted at the request of the publisher) to gather information from **https://fastfoodnutrition.org/**. You can find information about all kinds of food items like this by checking out the site. It can be super useful for making road trips healthier : ) 
 
 
-
-```{r}
+```{r, message = FALSE, warning=FALSE}
 # loading the data from github
 tuesdata_FF <- tidytuesdayR::tt_load(2018, week = 23)
 
@@ -50,19 +51,24 @@ fastfood_calories <- tuesdata_FF$fastfood_calories
 #glimpse(fastfood_calories)
 
 # looking at restaurants
-unique(fastfood_calories$restaurant)
+#unique(fastfood_calories$restaurant)
 ```
 
-# this is for the general public
+# Information for the general public
 
-from my research, I know that the factors that impact brain function are the increased sugars and additional saturday fats.
+The purpose of this is to create a simple, yet informative figure that conveys the amount of saturated fats and sugars within each of the common fast food items.  Nutrition and neuroscience literature has shown that the factors that impact brain function are the increased sugars and additional saturated fats.
+
+Below, I have listed out the ways the metrics were calculated. These methods were based on information collected from the Seattle School Districts evaluating healthy lunch items in school children. The PDF can be found [here](http://district.schoolnutritionandfitness.com/visaliausd/files/SB12Howtocalculatefat.pdf).
 
 
-$$(saturated fat (*9) / total calories) * 100 = saturated fat contribution (percent) $$
+## calculating calories from saturated fats 
 
-$$sugar / (total_fat + total_carb + protein + (sodium/100) + (cholesterol/100) * 100) = sugar contribution (percent) $$
 
-$$calories/2000)*100 = daily calories (percent)  $$
+$$(saturated fat (*9) / total calories) * 100 = saturated fat contribution (percent)$$
+
+$$sugar / (total_fat + total_carb + protein + (sodium/100) + (cholesterol/100) * 100) = sugar contribution (percent)$$
+
+$$calories/2000)*100 = daily calories (percent)$$
 
 ```{r}
 
@@ -85,7 +91,7 @@ fastfood_calories <- fastfood_calories %>%
 ```
 
 
-## calculating calories from saturated fats 
+
 
 According to NIH, you should limit saturated fat to less than 10% of your daily calories. So which foods contribute the most saturated fats? To see this, we have to create food categories. 
 
@@ -236,7 +242,7 @@ mlt_summarized_ff$proper_name <- factor(mlt_summarized_ff$proper_name,
 
 Within the data below, I have isolated out the contributions of **saturated fats** and **added sugars** to the **total (daily) caloric contribution** to the food. For example, _tendies_ predominately referes to chicken and includes nuggets, tenders, and strips. You'll notice that they contribute a large amount to the daily calorie count. Why is this? Is it because they come in 60 piece packages or because of large amounts of dense protein. 
 
-```{r}
+```{r, fig.height = 7, fig.width = 7}
 
 # plotting the data
 mlt_summarized_ff_wchain %>%
@@ -249,9 +255,12 @@ mlt_summarized_ff_wchain %>%
                                "#99cc99",
                                "#330099")) +
   scale_y_continuous(labels=scales::percent) +
-  theme(axis.text = element_text(size=12,
+  theme(axis.text.y = element_text(size=12,
                                  face="bold",
                                  color = "black"),
+        axis.text.x = element_text(face="bold",
+                                   size=10,
+                                   color = "black"),
         legend.text = element_text(face="bold",
                                    size = 10),
         panel.grid.minor.x = element_blank(),
@@ -268,7 +277,6 @@ mlt_summarized_ff_wchain %>%
        title="Average Caloric Contribution of American Fast Foods",
        subtitle = "Insights into the Western Style Diet",
        fill="") 
-
 
 ```
 
@@ -307,7 +315,7 @@ mlt_summarized_ff %>%
                                "#99cc99",
                                "#330099")) +
   scale_y_continuous(labels=scales::percent) +
-  theme(axis.text = element_text(size=12,
+  theme(axis.text.y = element_text(size=12,
                                  face="bold",
                                  color = "black"),
         legend.text = element_text(face="bold",
