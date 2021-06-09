@@ -1,0 +1,330 @@
+---
+title: "MoMA"
+author: "AJ Mitchell"
+description: This is meta description.
+draft: no
+image: images/post/moma_paintings_title.png
+tags:
+- MoMA
+- lab 2
+- gifted
+categories: Top Labs
+---
+
+# Introduction
+
+My final project will investigate the caloric contributions from fast food restaurant. These data come from the 2018 TidyTuesday Dataset title **Fast Food Calories**. This is for the general public, and to expand on what was started in the franchise opportunity website. If you follow the link to look at where the data was used (https://www.franchiseopportunities.com/blog/general-franchise-information/fast-food-calorie-comparison-charts), you can see that they predominantly look at caloric content of each food item. This is a very zoomed out perspective, and doesn't offer much insight into the nutritional value of the fast food items. I also did not care to break down by restaurant at this level but have ideas about how to capture it. 
+
+My research focuses on understanding the impact of Western Style Diet on brain development. Specifically, I study how consuming this diet during pregnancy can impact brain development and behavioral outcomes. We have learned that the increased levels of saturated fats and the additional sugars within the WSD are strongly related to differences in brain development and behavioral outcomes of children. So, iin order to expand, I wanted to identify which foods have higher amounts of sugars and saturated fats. 
+
+
+A stacked barchart is used to convey the information, and I felt this was best because it conveys several bits of information within one 'swoop'. It's kind of difficult to look at at first, but once you understand what the colors are, i think it becomes very intuitive. The `green` represents the average caloric contribution _(based on a 2000 calorie diet)_ of the food category, and the colors represent how much sugar (`blue`), and how much saturated fat (`red`) contributes to percentage in `green`. There are other contributors that have been excluded (like protein) that account for the extra space. What I hope to do with this final project is walk through each step and get to the ultimate outcome. 
+
+
+
+
+```{r}
+library(tidyverse)
+library(readxl)
+library(fmsb)
+```
+
+# Loading the fast food data
+
+So, we know the data came from a TidyTuesday challenge, but where did they get it from?
+
+The author of this challenge used some web scraping techniques (that had to be deleted at the request of the publisher) to gather information from https://fastfoodnutrition.org/.
+
+You can find information about all kinds of food items like this by checking out the site. It can be super useful for making road trips healthier : ) 
+
+
+
+```{r}
+# loading the data from github
+tuesdata_FF <- tidytuesdayR::tt_load(2018, week = 23)
+
+# renaming the data
+fastfood_calories <- tuesdata_FF$fastfood_calories
+
+# viewing the data
+#glimpse(fastfood_calories)
+
+# looking at restaurants
+unique(fastfood_calories$restaurant)
+```
+
+# this is for the general public
+
+from my research, I know that the factors that impact brain function are the increased sugars and additional saturday fats.
+
+
+$$(saturated fat (*9) / total calories) * 100 = saturated fat contribution (percent) $$
+
+$$sugar / (total_fat + total_carb + protein + (sodium/100) + (cholesterol/100) * 100) = sugar contribution (percent) $$
+
+$$calories/2000)*100 = daily calories (percent)  $$
+
+```{r}
+
+# percent sat fat of calories
+fastfood_calories <- fastfood_calories %>%
+  mutate(perc_sat_fat_cals = ((sat_fat*9)/calories)*100) # matches website - website may be incorrect
+ 
+  
+# percent sugar to caloric intake
+fastfood_calories <- fastfood_calories %>%
+  mutate(perc_sugar_cals = (sugar/(total_fat + total_carb + protein + sugar + (sodium/100) + (cholesterol/100))*100))
+
+# how many calories does the food item contribute to daily intake
+fastfood_calories <- fastfood_calories %>%
+  mutate(perc_daily_cals = (calories/2000)*100)
+
+# not using because I'm not sure how imformative it it
+fastfood_calories <- fastfood_calories %>%
+  mutate(satfat_sugar_ratio = perc_sat_fat_cals/perc_sugar_cals)
+```
+
+
+## calculating calories from saturated fats 
+
+According to NIH, you should limit saturated fat to less than 10% of your daily calories. So which foods contribute the most saturated fats? To see this, we have to create food categories. 
+
+Fast food items have been broken down into 9 categories:
+ - salad 
+ - burger 
+ - sandwich 
+ - tendies 
+ - hot dog 
+ - taco 
+ - burrito 
+ - pizza 
+ - other
+
+
+```{r}
+unique(fastfood_calories$salad_cat)
+
+# creating categories for grouping caloric contributions
+fastfood_calories <- fastfood_calories %>%
+  mutate(salad_cat = case_when(grepl("salad",
+                                     item,
+                                     ignore.case = TRUE) ~ "salad",
+                               grepl("sandwich|philly|footlong|wrap",
+                                     item,
+                                     ignore.case = TRUE) ~ "sandwich",
+                               grepl("burger|big mac|WHOPPER|king",
+                                     item,
+                                     ignore.case = TRUE) ~ "burger",
+                               grepl("tenders|nuggets|strips",
+                                     item,
+                                     ignore.case = TRUE) ~ "tendies",
+                               grepl("taco|chalupa|gordita",
+                                     item,
+                                     ignore.case = TRUE) ~ "taco",
+                               grepl("dog",
+                                     item,
+                                     ignore.case = TRUE) ~ "hot dog",
+                               grepl("burrito|nachos",
+                                     item,
+                                     ignore.case = TRUE) ~ "burrito",
+                               grepl("pizza",
+                                     item,
+                                     ignore.case = TRUE) ~ "pizza",
+                               TRUE ~ "other"))
+
+
+
+# assigning factors
+fastfood_calories$salad_cat <- as.factor(fastfood_calories$salad_cat)
+fastfood_calories$restaurant <- as.factor(fastfood_calories$restaurant)
+
+
+# assiging factor levels
+fastfood_calories$salad_cat <- factor(fastfood_calories$salad_cat,
+                                      levels = c( "salad",
+                                                  "burger",
+                                                  "sandwich", 
+                                                  "tendies",
+                                                  "hot dog",
+                                                  "taco", 
+                                                  "burrito",
+                                                  "pizza",
+                                                  "other"))
+
+
+```
+
+# manipulations for visualizations
+
+Below there are several manippulations that need to be made in order to group the data properly for visualizations. 
+
+
+```{r}
+
+fastfood_calories %>%
+  filter(salad_cat %in% c("sandwich",
+                          "burger",
+                          "salad",
+                          "tendies",
+                          "taco"))
+
+summarized_ff_wchain <- fastfood_calories %>%
+  filter(perc_sugar_cals >= .01) %>%
+  filter(perc_sat_fat_cals >= .01) %>%
+  group_by(salad_cat, restaurant) %>%
+  summarise(mean_sug = mean(perc_sugar_cals,
+                            na.rm=T),
+            mean_sat = mean(perc_sat_fat_cals,
+                            na.rm=T),
+            mean_daycals = mean(perc_daily_cals,
+                                na.rm = T))
+
+summarized_ff <- fastfood_calories %>%
+  filter(perc_sugar_cals >= .01) %>%
+  filter(perc_sat_fat_cals >= .01) %>%
+  group_by(salad_cat) %>%
+  summarise(mean_sug = mean(perc_sugar_cals,
+                            na.rm=T),
+            mean_sat = mean(perc_sat_fat_cals,
+                            na.rm=T),
+            mean_daycals = mean(perc_daily_cals,
+                                na.rm = T))
+
+#melting the data for visualization 
+mlt_summarized_ff_wchain <- reshape2::melt(summarized_ff_wchain)
+mlt_summarized_ff <- reshape2::melt(summarized_ff)
+
+# assigning proper names for variables
+mlt_summarized_ff_wchain <- mlt_summarized_ff_wchain %>%
+  mutate(proper_name = case_when(variable == "mean_sat" ~ "Saturated Fat",
+                                 variable == "mean_sug" ~ "Sugar",
+                                 variable == "mean_daycals" ~ "Total Daily Calories"))
+
+mlt_summarized_ff <- mlt_summarized_ff %>%
+  mutate(proper_name = case_when(variable == "mean_sat" ~ "Saturated Fat",
+                                 variable == "mean_sug" ~ "Sugar",
+                                 variable == "mean_daycals" ~ "Total Daily Calories"))
+
+# cumulative sum for  <- did not use 
+mlt_summarized_ff_wchain <- mlt_summarized_ff_wchain %>%
+  group_by(variable) %>%
+  mutate(label_y = cumsum(value))
+
+# assigning levels to factors
+mlt_summarized_ff_wchain$variable <- factor(mlt_summarized_ff_wchain$variable,
+                                            levels = c("mean_sat",
+                                                     "mean_daycals",
+                                                     "mean_sug"))
+
+mlt_summarized_ff$variable <- factor(mlt_summarized_ff$variable,
+                                            levels = c("mean_sat",
+                                                     "mean_daycals",
+                                                     "mean_sug"))
+# assigning levels to factors
+mlt_summarized_ff_wchain$proper_name <- factor(mlt_summarized_ff_wchain$proper_name,
+                                            levels = c("Saturated Fat",
+                                                     "Total Daily Calories",
+                                                     "Sugar"))
+
+mlt_summarized_ff$proper_name <- factor(mlt_summarized_ff$proper_name,
+                                            levels = c("Saturated Fat",
+                                                     "Total Daily Calories",
+                                                     "Sugar"))
+```
+
+# Plotting the data
+
+Within the data below, I have isolated out the contributions of **saturated fats** and **added sugars** to the **total (daily) caloric contribution** to the food. For example, _tendies_ predominately referes to chicken and includes nuggets, tenders, and strips. You'll notice that they contribute a large amount to the daily calorie count. Why is this? Is it because they come in 60 piece packages or because of large amounts of dense protein. 
+
+```{r}
+
+# plotting the data
+mlt_summarized_ff_wchain %>%
+  filter(!salad_cat == "other") %>%
+  ggplot(aes(x=salad_cat,
+             y=value,
+             fill=proper_name)) +
+  geom_col(position = "fill") +
+  scale_fill_manual(values = c("#993333",
+                               "#99cc99",
+                               "#330099")) +
+  scale_y_continuous(labels=scales::percent) +
+  theme(axis.text = element_text(size=12,
+                                 face="bold",
+                                 color = "black"),
+        legend.text = element_text(face="bold",
+                                   size = 10),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.x = element_blank(),
+        axis.title = element_text(size=14,
+                                  face="bold"),
+        title = element_text(size=14,face="bold"),
+        plot.background = element_rect(fill="lightskyblue3"),
+        legend.background = element_rect(fill = "lightskyblue3"),
+        panel.background = element_rect(fill="grey66")) +
+ # coord_flip() +
+  labs(x="Fast Food Item",
+       y="Caloric Percentage (2000 cal/day)",
+       title="Average Caloric Contribution of American Fast Foods",
+       subtitle = "Insights into the Western Style Diet",
+       fill="") 
+
+
+```
+
+
+
+```{r, eval=FALSE, include=FALSE}
+fastfood_calories %>%
+  filter(!salad_cat == "other") %>%
+  filter(perc_sat_fat_cals <= 100) %>%
+  ggplot(aes(x=salad_cat,
+             y=perc_sat_fat_cals),
+             fill=salad_cat) +
+    geom_col() +
+  #geom_point(size=2) +
+  #ggbeeswarm::geom_quasirandom(size=2) +
+  scale_fill_brewer(palette = "Paired") 
+
+fastfood_calories %>%
+  ggpubr::ggsummarystats(x = "salad_cat",
+                         y = "perc_sat_fat_cals",
+                         ggpubr::ggbarplot,
+                         add = "jitter",
+                         color = "salad_cat")
+
+ggpubr::ggpar(ff_pubr, 
+              ylim = c(0, 50))
+
+
+mlt_summarized_ff %>%
+  filter(!salad_cat == "other") %>%
+  ggplot(aes(x=salad_cat,
+             y=value,
+             fill=proper_name)) +
+  geom_col(position = "stack") +
+  scale_fill_manual(values = c("#993333",
+                               "#99cc99",
+                               "#330099")) +
+  scale_y_continuous(labels=scales::percent) +
+  theme(axis.text = element_text(size=12,
+                                 face="bold",
+                                 color = "black"),
+        legend.text = element_text(face="bold",
+                                   size = 10),
+        panel.grid.minor.x = element_blank(),
+        panel.grid.major.x = element_blank(),
+        axis.title = element_text(size=14,
+                                  face="bold"),
+        title = element_text(size=14,face="bold"),
+        plot.background = element_rect(fill="lightskyblue3"),
+        legend.background = element_rect(fill = "lightskyblue3"),
+        panel.background = element_rect(fill="grey66")) +
+ # coord_flip() +
+  labs(x="Fast Food Item",
+       y="Caloric Percentage (2000 cal/day)",
+       title="Average Caloric Contribution of American Fast Foods",
+       subtitle = "Insights into the Western Style Diet",
+       fill="")
+```
+

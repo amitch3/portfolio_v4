@@ -35,18 +35,21 @@ library(readxl)
 
 
 ```{r}
-artworks_cleaned <- read_csv("static/post/MoMA_lab_2/artworks-cleaned.csv",
+artworks_cleaned <- read_csv("artworks-cleaned.csv",
                              col_types = cols(artist_gender = col_factor(levels = c("Male",
                                                                                     "Female"))))
 
+
 artist_by_country_cl <- artworks_cleaned %>% 
   separate(col = artist_bio,
-           c("NArmv","birth_country"))
+           c("NArmv","birth_country")) 
 
 # removing the extra row that is created with 'sep'
 
 artist_by_country_cl <- artist_by_country_cl %>%
   dplyr::select(!NArmv)
+
+glimpse(artist_by_country_cl)
 ```
 
 ## wrangling the data
@@ -106,7 +109,7 @@ artist_by_country_cl$birth_country <- as.factor(artist_by_country_cl$birth_count
 
 # setting acquired_alive as factor
 
-artist_by_country_cl$acquired_alive <- as.factor(artist_by_country_cl$acquired_alive)
+#artist_by_country_cl$acquired_alive <- as.factor(artist_by_country_cl$acquired_alive)
 
 # setting decade_acquired as factor
 

@@ -1,0 +1,200 @@
+---
+title: "MoMA"
+author: "AJ Mitchell"
+description: This is meta description.
+draft: no
+image: images/post/moma_paintings_title.png
+tags:
+- MoMA
+- lab 2
+- gifted
+categories: Top Labs
+---
+
+
+
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>This post is from the MoMA lab. I found it interesting in that lab that no paintings were purchased from Africa and few were purchased from South American or Middle Eastern countries. This strikes me as a classic American bias where America makes up something that it alone is good at and forces that standard on global society.</p>
+<p>I personally think there should be a reinvention on what is modern art and this definition should be more inclusing of the aforementioned countries.</p>
+<div class="figure">
+<img src="/images/post/paintings_in_moma.png" alt="Differences in the average quality and pricing of wines from California and Oregon" />
+<p class="caption">Differences in the average quality and pricing of wines from California and Oregon</p>
+</div>
+<div class="figure">
+<img src="/images/post/purchased_paintings_moma.png" alt="Differences in the average quality and pricing of wines from California and Oregon" />
+<p class="caption">Differences in the average quality and pricing of wines from California and Oregon</p>
+</div>
+<div class="figure">
+<img src="/images/post/gifted_paintings_from_moma.png" alt="Differences in the average quality and pricing of wines from California and Oregon" />
+<p class="caption">Differences in the average quality and pricing of wines from California and Oregon</p>
+</div>
+<div id="revisiting-the-moma" class="section level2">
+<h2>Revisiting the MoMA</h2>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages ------------------------------------------------------------------------ tidyverse 1.3.0 --</code></pre>
+<pre><code>## v ggplot2 3.3.2     v purrr   0.3.4
+## v tibble  3.0.3     v dplyr   1.0.2
+## v tidyr   1.1.2     v stringr 1.4.0
+## v readr   1.3.1     v forcats 0.5.0</code></pre>
+<pre><code>## -- Conflicts --------------------------------------------------------------------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(readxl)</code></pre>
+<pre class="r"><code>artworks_cleaned &lt;- read_csv(&quot;artworks-cleaned.csv&quot;,
+                             col_types = cols(artist_gender = col_factor(levels = c(&quot;Male&quot;,
+                                                                                    &quot;Female&quot;))))
+
+
+artist_by_country_cl &lt;- artworks_cleaned %&gt;% 
+  separate(col = artist_bio,
+           c(&quot;NArmv&quot;,&quot;birth_country&quot;)) </code></pre>
+<pre><code>## Warning: Expected 2 pieces. Additional pieces discarded in 2252 rows [1, 2, 3,
+## 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, ...].</code></pre>
+<pre class="r"><code># removing the extra row that is created with &#39;sep&#39;
+
+artist_by_country_cl &lt;- artist_by_country_cl %&gt;%
+  dplyr::select(!NArmv)
+
+glimpse(artist_by_country_cl)</code></pre>
+<pre><code>## Rows: 2,253
+## Columns: 23
+## $ title             &lt;chr&gt; &quot;Rope and People, I&quot;, &quot;Fire in the Evening&quot;, &quot;Por...
+## $ artist            &lt;chr&gt; &quot;Joan Miró&quot;, &quot;Paul Klee&quot;, &quot;Paul Klee&quot;, &quot;Pablo Pic...
+## $ birth_country     &lt;chr&gt; &quot;Spanish&quot;, &quot;German&quot;, &quot;German&quot;, &quot;Spanish&quot;, &quot;Americ...
+## $ artist_birth_year &lt;dbl&gt; 1893, 1879, 1879, 1881, 1880, 1879, 1943, 1880, 1...
+## $ artist_death_year &lt;dbl&gt; 1983, 1940, 1940, 1973, 1946, 1953, 1977, 1950, 1...
+## $ num_artists       &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1...
+## $ n_female_artists  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0...
+## $ n_male_artists    &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1...
+## $ artist_gender     &lt;fct&gt; Male, Male, Male, Male, Male, Male, Male, Male, M...
+## $ year_acquired     &lt;dbl&gt; 1936, 1970, 1966, 1955, 1939, 1968, 1997, 1931, 1...
+## $ year_created      &lt;dbl&gt; 1935, 1929, 1927, 1919, 1925, 1919, 1970, 1929, 1...
+## $ circumference_cm  &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ depth_cm          &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ diameter_cm       &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ height_cm         &lt;dbl&gt; 104.8, 33.8, 60.3, 215.9, 50.8, 129.2, 200.0, 54....
+## $ length_cm         &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ width_cm          &lt;dbl&gt; 74.6, 33.3, 36.8, 78.7, 54.0, 89.9, 200.0, 38.1, ...
+## $ seat_height_cm    &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ purchase          &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, ...
+## $ gift              &lt;lgl&gt; TRUE, FALSE, FALSE, TRUE, TRUE, FALSE, TRUE, TRUE...
+## $ exchange          &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE, F...
+## $ classification    &lt;chr&gt; &quot;Painting&quot;, &quot;Painting&quot;, &quot;Painting&quot;, &quot;Painting&quot;, &quot;...
+## $ department        &lt;chr&gt; &quot;Painting &amp; Sculpture&quot;, &quot;Painting &amp; Sculpture&quot;, &quot;...</code></pre>
+</div>
+<div id="wrangling-the-data" class="section level2">
+<h2>wrangling the data</h2>
+<pre class="r"><code>artist_by_country_cl &lt;- artist_by_country_cl %&gt;%
+  mutate(decade_acquired = case_when(year_acquired &lt;= 1939 ~ &quot;Thirties&quot;,
+                            year_acquired &gt;= 1940 &amp;
+                              year_acquired &lt;= 1949 ~ &quot;Forties&quot;,
+                            year_acquired &gt;= 1950 &amp;
+                              year_acquired &lt;= 1959 ~ &quot;Fifties&quot;,
+                            year_acquired &gt;= 1960 &amp; 
+                              year_acquired &lt;= 1969 ~ &quot;Sixties&quot;,
+                              year_acquired &gt;= 1970 &amp;
+                            year_acquired &lt;= 1979 ~ &quot;Seventies&quot;,
+                            year_acquired &gt;= 1980 &amp;
+                              year_acquired &lt;= 1989 ~ &quot;Eighties&quot;,
+                            year_acquired &gt;= 1990 &amp;
+                              year_acquired &lt;= 1999 ~ &quot;Ninties&quot;,
+                              year_acquired &gt;= 2000 &amp;
+                              year_acquired &lt;= 2009 ~ &quot;Two_Thousands&quot;,
+                            year_acquired &gt;= 2010 ~ &quot;2010_Present&quot;))
+
+# this factor will need levels
+
+artist_by_country_cl$decade_acquired  &lt;- factor(artist_by_country_cl$decade_acquired,
+          levels = c(&quot;Thirties&quot;,
+                     &quot;Forties&quot;,
+                     &quot;Fifties&quot;,
+                     &quot;Sixties&quot;,
+                     &quot;Seventies&quot;,
+                     &quot;Eighties&quot;,
+                     &quot;Ninties&quot;,
+                     &quot;Two_Thousands&quot;,
+                     &quot;2010_Present&quot;))</code></pre>
+</div>
+<div id="factors-and-birth-countries" class="section level2">
+<h2>Factors and birth countries</h2>
+<pre class="r"><code>artist_by_country_cl &lt;- artist_by_country_cl %&gt;%
+  mutate(continent = case_when(str_detect(birth_country, &quot;Spanish|German|French|Italian|Danish|Dutch|British|Belgian|Swiss|Swedish|Irish|Icelandic|Norwegian&quot;) ~ &quot;Western Europe&quot;,
+                             str_detect(birth_country, &quot;Polish|Austrian|Czech|Ukrainian|Romanian|Hungarian|Croatian&quot;) ~ &quot;Eastern Europe&quot;,
+                             str_detect(birth_country, &quot;Israeli|Argentine|Iranian|Turkish&quot;) ~ &quot;Middle East&quot;,
+                             str_detect(birth_country, &quot;American|Haitian|Canadian|Cuban&quot;) ~ &quot;North America&quot;, 
+                             str_detect(birth_country, &quot;Mexican|Brazilian|Nicaraguan|Chilean|Guatemalan|Uruguayan|Peruvian|Guyanese|Bolivian|Venezuelan|Colombian&quot;) ~ &quot;South America&quot;,
+                             str_detect(birth_country, &quot;Sudanese | Moroccan|Tanzanian|Zimbabwean|Congolese|South&quot;) ~ &quot;Africa&quot;,
+                             str_detect(birth_country, &quot;Japanese|Korean|Indian&quot; ) ~ &quot;Asia&quot;, 
+                             str_detect(birth_country, &quot;Russian&quot;) ~ &quot;Russia&quot;,
+                             str_detect(birth_country, &quot;Australian&quot;) ~ &quot;Australia&quot;,
+                             str_detect(birth_country, &quot;NA&quot;) ~ &quot;Other&quot;))
+
+# setting birth_country as factor
+
+artist_by_country_cl$birth_country &lt;- as.factor(artist_by_country_cl$birth_country)
+
+# setting acquired_alive as factor
+
+#artist_by_country_cl$acquired_alive &lt;- as.factor(artist_by_country_cl$acquired_alive)
+
+# setting decade_acquired as factor
+
+artist_by_country_cl$decade_acquired &lt;- as.factor(artist_by_country_cl$decade_acquired)
+
+# setting continent as factor
+
+artist_by_country_cl$continent &lt;- as.factor(artist_by_country_cl$continent)
+
+# glimpse the data to make sure rows are appropriate. 
+
+glimpse(artist_by_country_cl) %&gt;%
+  head()</code></pre>
+<pre><code>## Rows: 2,253
+## Columns: 25
+## $ title             &lt;chr&gt; &quot;Rope and People, I&quot;, &quot;Fire in the Evening&quot;, &quot;Por...
+## $ artist            &lt;chr&gt; &quot;Joan Miró&quot;, &quot;Paul Klee&quot;, &quot;Paul Klee&quot;, &quot;Pablo Pic...
+## $ birth_country     &lt;fct&gt; Spanish, German, German, Spanish, American, Frenc...
+## $ artist_birth_year &lt;dbl&gt; 1893, 1879, 1879, 1881, 1880, 1879, 1943, 1880, 1...
+## $ artist_death_year &lt;dbl&gt; 1983, 1940, 1940, 1973, 1946, 1953, 1977, 1950, 1...
+## $ num_artists       &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1...
+## $ n_female_artists  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0...
+## $ n_male_artists    &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1...
+## $ artist_gender     &lt;fct&gt; Male, Male, Male, Male, Male, Male, Male, Male, M...
+## $ year_acquired     &lt;dbl&gt; 1936, 1970, 1966, 1955, 1939, 1968, 1997, 1931, 1...
+## $ year_created      &lt;dbl&gt; 1935, 1929, 1927, 1919, 1925, 1919, 1970, 1929, 1...
+## $ circumference_cm  &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ depth_cm          &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ diameter_cm       &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ height_cm         &lt;dbl&gt; 104.8, 33.8, 60.3, 215.9, 50.8, 129.2, 200.0, 54....
+## $ length_cm         &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ width_cm          &lt;dbl&gt; 74.6, 33.3, 36.8, 78.7, 54.0, 89.9, 200.0, 38.1, ...
+## $ seat_height_cm    &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
+## $ purchase          &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, ...
+## $ gift              &lt;lgl&gt; TRUE, FALSE, FALSE, TRUE, TRUE, FALSE, TRUE, TRUE...
+## $ exchange          &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE, F...
+## $ classification    &lt;chr&gt; &quot;Painting&quot;, &quot;Painting&quot;, &quot;Painting&quot;, &quot;Painting&quot;, &quot;...
+## $ department        &lt;chr&gt; &quot;Painting &amp; Sculpture&quot;, &quot;Painting &amp; Sculpture&quot;, &quot;...
+## $ decade_acquired   &lt;fct&gt; Thirties, Seventies, Sixties, Fifties, Thirties, ...
+## $ continent         &lt;fct&gt; Western Europe, Western Europe, Western Europe, W...</code></pre>
+<pre><code>## # A tibble: 6 x 25
+##   title artist birth_country artist_birth_ye~ artist_death_ye~ num_artists
+##   &lt;chr&gt; &lt;chr&gt;  &lt;fct&gt;                    &lt;dbl&gt;            &lt;dbl&gt;       &lt;dbl&gt;
+## 1 &quot;Rop~ Joan ~ Spanish                   1893             1983           1
+## 2 &quot;Fir~ Paul ~ German                    1879             1940           1
+## 3 &quot;Por~ Paul ~ German                    1879             1940           1
+## 4 &quot;Gui~ Pablo~ Spanish                   1881             1973           1
+## 5 &quot;Gra~ Arthu~ American                  1880             1946           1
+## 6 &quot;\&quot;M~ Franc~ French                    1879             1953           1
+## # ... with 19 more variables: n_female_artists &lt;dbl&gt;, n_male_artists &lt;dbl&gt;,
+## #   artist_gender &lt;fct&gt;, year_acquired &lt;dbl&gt;, year_created &lt;dbl&gt;,
+## #   circumference_cm &lt;lgl&gt;, depth_cm &lt;dbl&gt;, diameter_cm &lt;lgl&gt;, height_cm &lt;dbl&gt;,
+## #   length_cm &lt;lgl&gt;, width_cm &lt;dbl&gt;, seat_height_cm &lt;lgl&gt;, purchase &lt;lgl&gt;,
+## #   gift &lt;lgl&gt;, exchange &lt;lgl&gt;, classification &lt;chr&gt;, department &lt;chr&gt;,
+## #   decade_acquired &lt;fct&gt;, continent &lt;fct&gt;</code></pre>
+</div>
+<div id="isolating-countries-of-interest-africa-south-america-middle-eastern" class="section level2">
+<h2>isolating countries of interest (Africa, South America, Middle Eastern)</h2>
+<p>Lets just ID the paintings</p>
+</div>
+</div>

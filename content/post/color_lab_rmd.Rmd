@@ -75,26 +75,53 @@ wash_hikes <- wash_hikes %>%
   mutate(height_class = ntile(highpoint, 4))
 
 wash_hikes$height_class <- as.factor(wash_hikes$height_class)
+
+
 ```
 
 ```{r}
 
-wash_hikes %>%
-  names()
+range(wash_hikes$highpoint)
 
 wash_hikes %>%
-  
-  ggplot(aes(y=highpoint,
-             x=rating,
-           fill= name)) +
-  #geom_density(alpha=.5) + 
-  geom_point() +
+  ggplot(aes(x=highpoint,
+             color=score)) +
+  geom_density(alpha=.5) + 
+ # geom_jitter() +
  # scale_fill_manual(values = c("#ff9966",
  #                              "#CC00CC",
  #                               "#3333CC")) +
   labs(x= "Peak Above Sea Level",
        y = "Density Value",
        title="Distribution of Peak Heights of Washington Hikes and their Rating",
-       fill = "Rating") 
+       fill = "Rating") +
+  coord_cartesian(xlim=c(5000,7500))
+
+wash_hikes %>%
+  group_by(location) %>%
+  filter(highpoint >= 5000 &
+           highpoint <= 6000) %>%
+  ggplot(aes(y=highpoint,
+             x=score, color=score)) +
+  geom_violin() +
+  ggbeeswarm::geom_quasirandom()
+
+wash_hikes %>%
+  group_by(location) %>%
+  filter(highpoint >= 4000 &
+           highpoint <= 5000) %>%
+  ggplot(aes(y=highpoint,
+             x=score, color=score)) +
+  geom_violin() +
+  ggbeeswarm::geom_quasirandom()
+
+wash_hikes %>%
+  group_by(location) %>%
+  filter(highpoint >= 6000 &
+           highpoint <= 7000) %>%
+  ggplot(aes(y=highpoint,
+             x=score, color=score)) +
+  geom_violin() +
+  ggbeeswarm::geom_quasirandom()
 ```
 
