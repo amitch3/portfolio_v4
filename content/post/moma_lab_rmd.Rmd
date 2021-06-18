@@ -13,32 +13,41 @@ categories: Top Labs
 
 # Introduction
 
-This post is from the MoMA lab. I found it interesting in that lab that no paintings were purchased from Africa and few were purchased from South American or Middle Eastern countries. This strikes me as a classic American bias where America makes up something that it alone is good at and forces that standard on global society. 
-
-I personally think there should be a reinvention on what is modern art and this definition should be more inclusing of the aforementioned countries. 
+This post is from the MoMA (Museaum of Modern Art) lab.
 
 
-![Differences in the average quality and pricing of wines from California and Oregon](/images/post/paintings_in_moma.png)
+In the original lab, I found it interesting in that lab that no paintings were purchased from Africa and few were purchased from South American or Middle Eastern countries. This strikes me as a classic American bias where America makes up something that it alone is good at and forces that standard on global society. 
 
-![Differences in the average quality and pricing of wines from California and Oregon](/images/post/purchased_paintings_moma.png)
+So in this, revisit to the MoMA, I would like to identify the artist and paintings from Aftica in the MoMA
 
-![Differences in the average quality and pricing of wines from California and Oregon](/images/post/gifted_paintings_from_moma.png)
 
+![Paintings in the MoMA](/images/post/painting_in_moma.png)
+
+![Paintings Purchased by the MoMA](/images/post/purchased_paintings_moma.png)
+
+![Paintings Gifted to the MoMA](/images/post/gifted_paintings_from_moma.png)
+<style>
+div.blue pre { background-color:lightblue; }
+div.blue pre.r { background-color:grey77; }
+</style>
+
+<div class = "blue">
 
 ## Revisiting the MoMA
 
-```{r}
+```{r, warning = FALSE, message=FALSE }
 library(tidyverse)
 library(readxl)
+library(viridis)
+library(plotly)
 ```
 
 
 
-```{r}
+```{r, warning = FALSE, message=FALSE}
 artworks_cleaned <- read_csv("artworks-cleaned.csv",
                              col_types = cols(artist_gender = col_factor(levels = c("Male",
                                                                                     "Female"))))
-
 
 artist_by_country_cl <- artworks_cleaned %>% 
   separate(col = artist_bio,
@@ -49,7 +58,7 @@ artist_by_country_cl <- artworks_cleaned %>%
 artist_by_country_cl <- artist_by_country_cl %>%
   dplyr::select(!NArmv)
 
-glimpse(artist_by_country_cl)
+#glimpse(artist_by_country_cl)
 ```
 
 ## wrangling the data
@@ -121,11 +130,52 @@ artist_by_country_cl$continent <- as.factor(artist_by_country_cl$continent)
 
 # glimpse the data to make sure rows are appropriate. 
 
-glimpse(artist_by_country_cl) %>%
-  head()
+#unique(artist_by_country_cl$artist)
 
 ```
 
-## isolating countries of interest (Africa, South America, Middle Eastern)
+# Isolating African Paintings
 
-Lets just ID the paintings
+Below you can see all of the paintings at the MoMA when this data was created. You can see the authors in the legend and hover over to see the title of the painting. 
+
+```{r}
+
+plotly::ggplotly(artist_by_country_cl %>%
+  dplyr::filter(continent == "Africa") %>%
+  ggplot(aes(x=year_created,
+             y=year_acquired, 
+             color=artist,
+             title=title)) +
+  geom_jitter(aes(size=2), 
+              show.legend = FALSE) +
+    labs(title="Paintings From African Artists at the Moma",
+         y="Year Acquired",
+         x="Year Created") +
+    theme(axis.text = element_text(face="bold")) +
+  #ggrepel::geom_label_repel(aes(label = title),
+  #                          box.padding   = 0.85, 
+  #                          point.padding = .6,
+  #                          min.segment.length = Inf,
+  #                          position = "identity",
+  #                          segment.color = 'grey50') +
+  viridis::scale_color_viridis(discrete = TRUE),
+  tooltip=c("artist", 
+            "title",
+            "year_acquired"))
+```
+
+
+# Examples of African Work in the MoMA
+
+Below are some examples of artwork from African artists within the MoMA. From the limited selection detailed above. Essentially, I hope this highlights the need of MoMA to increase the amount of African artists they feature. 
+
+
+![The Painter, Marlene Dumas](/images/post/thepainter.jpg)
+
+
+
+![Condemnation withouth Judgement, from Cheri Samba](/images/post/condemnation_nojudge.jpg)
+
+![Men Taking Bananas Beer.., from Sam Joseph Ntiro](/images/post/men_take_bannas.jpg)
+
+</div>

@@ -15,7 +15,7 @@ title: 'The Color Lab'
 
 Using the Washington Trails (https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-11-24/readme.md) from a TidyTuesday challenge, I sought to determine if the hikes that have the highest points are the best rated. 
 
-## Figures from first labs
+## Figures from original labs
 
 The figure below shows that the highest density of top rated hikes corresponds with higher peaks. However, it looks like once you get to a high enough peak, the trade off quickly wears off. Which makes since when you think about it as once you get above the trees line the view does not change. 
 
@@ -25,7 +25,7 @@ FYI - The _Alpine Zone_ marks the tree lines, and this zone varies from state to
 
 ![Differences in the average quality and pricing of wines from California and Oregon](/images/post/washington_hikes.png)
 
-## Final Figure - Top Hikes for Doggos
+## Figure from Lab - Top Hikes for Doggos
 
 I expanded on the analysis on finding the top hikes for dogs in Washington. I just liked this one bc dogs, I will not be expanding or editing it. 
 
@@ -34,16 +34,27 @@ I expanded on the analysis on finding the top hikes for dogs in Washington. I ju
 
 # Final Project: Enhancing the Colors Labs
 
-```{r}
+In the original assignment, I highlighted the top hikes for dogs and found that the highest density of top hikes falls between 5,000 and 6,000 feet. 
+
+So to expand on this, I will identify and the top 10 hikes between in this range and list them nbelow. 
+
+<style>
+div.blue pre { background-color:lightblue; }
+div.blue pre.r { background-color:grey77; }
+</style>
+
+<div class = "blue">
+
+```{r, warning = FALSE, message=FALSE}
 library(tidyverse)
 library(tidytuesdayR)
 ```
 
 
-
 ## loading the data 
 
-```{r}
+
+```{r, warning = FALSE, message=FALSE}
 # loading the Washington Trails data
 tuesdata <- tidytuesdayR::tt_load(2020, week = 48)
 
@@ -53,7 +64,8 @@ wash_hikes <- tuesdata$hike_data
 
 ## adjusting variables categories for visualization
 
-```{r}
+
+```{r, warning = FALSE, message=FALSE}
 # setting variables to numerics and factors for visualization 
 
 wash_hikes$name <- as.factor(wash_hikes$name)
@@ -76,12 +88,20 @@ wash_hikes <- wash_hikes %>%
 
 wash_hikes$height_class <- as.factor(wash_hikes$height_class)
 
+#glimpse(wash_hikes)
+
+wash_hikes <- wash_hikes %>%
+  mutate(water_available = case_when(str_detect(features,
+                                                "Waterfalls|Rivers|Lakes") ~ "Water available",
+                                     str_detect(features, "Coast",) ~ "Salty Water",
+                                     TRUE ~ "No water"))
+
 
 ```
 
-```{r}
+```{r, warning = FALSE, message=FALSE}
 
-range(wash_hikes$highpoint)
+#range(wash_hikes$highpoint)
 
 wash_hikes %>%
   ggplot(aes(x=highpoint,
@@ -96,6 +116,10 @@ wash_hikes %>%
        title="Distribution of Peak Heights of Washington Hikes and their Rating",
        fill = "Rating") +
   coord_cartesian(xlim=c(5000,7500))
+
+```
+
+```{r, eval=F, include=F}
 
 wash_hikes %>%
   group_by(location) %>%
@@ -115,13 +139,65 @@ wash_hikes %>%
   geom_violin() +
   ggbeeswarm::geom_quasirandom()
 
-wash_hikes %>%
-  group_by(location) %>%
-  filter(highpoint >= 6000 &
-           highpoint <= 7000) %>%
-  ggplot(aes(y=highpoint,
-             x=score, color=score)) +
-  geom_violin() +
-  ggbeeswarm::geom_quasirandom()
 ```
 
+
+```{r, eval=FALSE}
+#determining the total amount of hikes bwetween the range to calc percentage
+# based on this lets isolate the top 40 hikes - we'll pick this for time
+
+wash_hikes %>%
+  filter(highpoint >= 5000 &
+           highpoint <= 6000) %>%
+  count(name) # n=396
+
+```
+
+```{r, fig.height=8, fig.width=14}
+
+wash_hikes %>%
+  filter(rating >= 4.37) %>%
+  filter(highpoint >= 5000 &
+           highpoint <= 6000) %>%
+    ggplot(aes(y=highpoint,
+               x=rating,
+               color=water_available)) +
+  ggbeeswarm::geom_quasirandom(aes(size=2),
+                               show.legend = F) +
+  theme(axis.text.x = element_text(angle=90,
+                                   vjust = .07)) +
+  labs(title="Top 10% of Hikes in Washington State",
+       subtitle="With or Without Water",
+       x="Rating",
+       y="Hike Highpoint",
+       color= "Water Available?") +
+  geom_hline(yintercept = 5750) +
+   ggrepel::geom_label_repel(aes(label=ifelse(highpoint>5750,
+                                              as.character(name),
+                                              '')), 
+                             hjust= 1,
+                             vjust=1) +
+  facet_wrap(~ water_available,
+             scales = "free",
+             ncol = 4) +
+  annotate(geom = "text",
+           x=4.7,
+           y=5725,
+           label="Labels added to heights above 5750 (arbitrary)")
+```
+
+
+# A few highlights
+
+
+Below are some images of the hikes with labels, courtesy of google : ) 
+
+
+![Moraine Lake Trail in Washington](/images/post/moraine_lake.jpeg)
+
+
+![Mount Dickerman in Washington](/images/post/mount_dickerman.jpg)
+
+![Summit Lake in Washington](/images/post/summit_lake.jpeg)
+
+</div>

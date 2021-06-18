@@ -11,80 +11,55 @@ tags:
 categories: Top Labs
 ---
 
+<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<script src="/rmarkdown-libs/plotly-binding/plotly.js"></script>
+<script src="/rmarkdown-libs/typedarray/typedarray.min.js"></script>
+<script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
+<link href="/rmarkdown-libs/crosstalk/css/crosstalk.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/crosstalk/js/crosstalk.min.js"></script>
+<link href="/rmarkdown-libs/plotly-htmlwidgets-css/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/plotly-main/plotly-latest.min.js"></script>
 
 
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
-<p>This post is from the MoMA lab. I found it interesting in that lab that no paintings were purchased from Africa and few were purchased from South American or Middle Eastern countries. This strikes me as a classic American bias where America makes up something that it alone is good at and forces that standard on global society.</p>
-<p>I personally think there should be a reinvention on what is modern art and this definition should be more inclusing of the aforementioned countries.</p>
+<p>This post is from the MoMA (Museaum of Modern Art) lab.</p>
+<p>In the original lab, I found it interesting in that lab that no paintings were purchased from Africa and few were purchased from South American or Middle Eastern countries. This strikes me as a classic American bias where America makes up something that it alone is good at and forces that standard on global society.</p>
+<p>So in this, revisit to the MoMA, I would like to identify the artist and paintings from Aftica in the MoMA</p>
 <div class="figure">
-<img src="/images/post/paintings_in_moma.png" alt="Differences in the average quality and pricing of wines from California and Oregon" />
-<p class="caption">Differences in the average quality and pricing of wines from California and Oregon</p>
+<img src="/images/post/painting_in_moma.png" alt="Paintings in the MoMA" />
+<p class="caption">Paintings in the MoMA</p>
 </div>
 <div class="figure">
-<img src="/images/post/purchased_paintings_moma.png" alt="Differences in the average quality and pricing of wines from California and Oregon" />
-<p class="caption">Differences in the average quality and pricing of wines from California and Oregon</p>
+<img src="/images/post/purchased_paintings_moma.png" alt="Paintings Purchased by the MoMA" />
+<p class="caption">Paintings Purchased by the MoMA</p>
 </div>
-<div class="figure">
-<img src="/images/post/gifted_paintings_from_moma.png" alt="Differences in the average quality and pricing of wines from California and Oregon" />
-<p class="caption">Differences in the average quality and pricing of wines from California and Oregon</p>
-</div>
-<div id="revisiting-the-moma" class="section level2">
-<h2>Revisiting the MoMA</h2>
-<pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## -- Attaching packages ------------------------------------------------------------------------ tidyverse 1.3.0 --</code></pre>
-<pre><code>## v ggplot2 3.3.2     v purrr   0.3.4
-## v tibble  3.0.3     v dplyr   1.0.2
-## v tidyr   1.1.2     v stringr 1.4.0
-## v readr   1.3.1     v forcats 0.5.0</code></pre>
-<pre><code>## -- Conflicts --------------------------------------------------------------------------- tidyverse_conflicts() --
-## x dplyr::filter() masks stats::filter()
-## x dplyr::lag()    masks stats::lag()</code></pre>
-<pre class="r"><code>library(readxl)</code></pre>
+<img src="/images/post/gifted_paintings_from_moma.png" alt="Paintings Gifted to the MoMA" />
+<style>
+div.blue pre { background-color:lightblue; }
+div.blue pre.r { background-color:grey77; }
+</style>
+<div class="blue">
+<h2 id="revisiting-the-moma">Revisiting the MoMA</h2>
+<pre class="r"><code>library(tidyverse)
+library(readxl)
+library(viridis)
+library(plotly)</code></pre>
 <pre class="r"><code>artworks_cleaned &lt;- read_csv(&quot;artworks-cleaned.csv&quot;,
                              col_types = cols(artist_gender = col_factor(levels = c(&quot;Male&quot;,
                                                                                     &quot;Female&quot;))))
 
-
 artist_by_country_cl &lt;- artworks_cleaned %&gt;% 
   separate(col = artist_bio,
-           c(&quot;NArmv&quot;,&quot;birth_country&quot;)) </code></pre>
-<pre><code>## Warning: Expected 2 pieces. Additional pieces discarded in 2252 rows [1, 2, 3,
-## 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, ...].</code></pre>
-<pre class="r"><code># removing the extra row that is created with &#39;sep&#39;
+           c(&quot;NArmv&quot;,&quot;birth_country&quot;)) 
+
+# removing the extra row that is created with &#39;sep&#39;
 
 artist_by_country_cl &lt;- artist_by_country_cl %&gt;%
   dplyr::select(!NArmv)
 
-glimpse(artist_by_country_cl)</code></pre>
-<pre><code>## Rows: 2,253
-## Columns: 23
-## $ title             &lt;chr&gt; &quot;Rope and People, I&quot;, &quot;Fire in the Evening&quot;, &quot;Por...
-## $ artist            &lt;chr&gt; &quot;Joan Miró&quot;, &quot;Paul Klee&quot;, &quot;Paul Klee&quot;, &quot;Pablo Pic...
-## $ birth_country     &lt;chr&gt; &quot;Spanish&quot;, &quot;German&quot;, &quot;German&quot;, &quot;Spanish&quot;, &quot;Americ...
-## $ artist_birth_year &lt;dbl&gt; 1893, 1879, 1879, 1881, 1880, 1879, 1943, 1880, 1...
-## $ artist_death_year &lt;dbl&gt; 1983, 1940, 1940, 1973, 1946, 1953, 1977, 1950, 1...
-## $ num_artists       &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1...
-## $ n_female_artists  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0...
-## $ n_male_artists    &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1...
-## $ artist_gender     &lt;fct&gt; Male, Male, Male, Male, Male, Male, Male, Male, M...
-## $ year_acquired     &lt;dbl&gt; 1936, 1970, 1966, 1955, 1939, 1968, 1997, 1931, 1...
-## $ year_created      &lt;dbl&gt; 1935, 1929, 1927, 1919, 1925, 1919, 1970, 1929, 1...
-## $ circumference_cm  &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
-## $ depth_cm          &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
-## $ diameter_cm       &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
-## $ height_cm         &lt;dbl&gt; 104.8, 33.8, 60.3, 215.9, 50.8, 129.2, 200.0, 54....
-## $ length_cm         &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
-## $ width_cm          &lt;dbl&gt; 74.6, 33.3, 36.8, 78.7, 54.0, 89.9, 200.0, 38.1, ...
-## $ seat_height_cm    &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
-## $ purchase          &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, ...
-## $ gift              &lt;lgl&gt; TRUE, FALSE, FALSE, TRUE, TRUE, FALSE, TRUE, TRUE...
-## $ exchange          &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE, F...
-## $ classification    &lt;chr&gt; &quot;Painting&quot;, &quot;Painting&quot;, &quot;Painting&quot;, &quot;Painting&quot;, &quot;...
-## $ department        &lt;chr&gt; &quot;Painting &amp; Sculpture&quot;, &quot;Painting &amp; Sculpture&quot;, &quot;...</code></pre>
-</div>
-<div id="wrangling-the-data" class="section level2">
-<h2>wrangling the data</h2>
+#glimpse(artist_by_country_cl)</code></pre>
+<h2 id="wrangling-the-data">wrangling the data</h2>
 <pre class="r"><code>artist_by_country_cl &lt;- artist_by_country_cl %&gt;%
   mutate(decade_acquired = case_when(year_acquired &lt;= 1939 ~ &quot;Thirties&quot;,
                             year_acquired &gt;= 1940 &amp;
@@ -115,9 +90,7 @@ artist_by_country_cl$decade_acquired  &lt;- factor(artist_by_country_cl$decade_a
                      &quot;Ninties&quot;,
                      &quot;Two_Thousands&quot;,
                      &quot;2010_Present&quot;))</code></pre>
-</div>
-<div id="factors-and-birth-countries" class="section level2">
-<h2>Factors and birth countries</h2>
+<h2 id="factors-and-birth-countries">Factors and birth countries</h2>
 <pre class="r"><code>artist_by_country_cl &lt;- artist_by_country_cl %&gt;%
   mutate(continent = case_when(str_detect(birth_country, &quot;Spanish|German|French|Italian|Danish|Dutch|British|Belgian|Swiss|Swedish|Irish|Icelandic|Norwegian&quot;) ~ &quot;Western Europe&quot;,
                              str_detect(birth_country, &quot;Polish|Austrian|Czech|Ukrainian|Romanian|Hungarian|Croatian&quot;) ~ &quot;Eastern Europe&quot;,
@@ -148,53 +121,46 @@ artist_by_country_cl$continent &lt;- as.factor(artist_by_country_cl$continent)
 
 # glimpse the data to make sure rows are appropriate. 
 
-glimpse(artist_by_country_cl) %&gt;%
-  head()</code></pre>
-<pre><code>## Rows: 2,253
-## Columns: 25
-## $ title             &lt;chr&gt; &quot;Rope and People, I&quot;, &quot;Fire in the Evening&quot;, &quot;Por...
-## $ artist            &lt;chr&gt; &quot;Joan Miró&quot;, &quot;Paul Klee&quot;, &quot;Paul Klee&quot;, &quot;Pablo Pic...
-## $ birth_country     &lt;fct&gt; Spanish, German, German, Spanish, American, Frenc...
-## $ artist_birth_year &lt;dbl&gt; 1893, 1879, 1879, 1881, 1880, 1879, 1943, 1880, 1...
-## $ artist_death_year &lt;dbl&gt; 1983, 1940, 1940, 1973, 1946, 1953, 1977, 1950, 1...
-## $ num_artists       &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1...
-## $ n_female_artists  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0...
-## $ n_male_artists    &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1...
-## $ artist_gender     &lt;fct&gt; Male, Male, Male, Male, Male, Male, Male, Male, M...
-## $ year_acquired     &lt;dbl&gt; 1936, 1970, 1966, 1955, 1939, 1968, 1997, 1931, 1...
-## $ year_created      &lt;dbl&gt; 1935, 1929, 1927, 1919, 1925, 1919, 1970, 1929, 1...
-## $ circumference_cm  &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
-## $ depth_cm          &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
-## $ diameter_cm       &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
-## $ height_cm         &lt;dbl&gt; 104.8, 33.8, 60.3, 215.9, 50.8, 129.2, 200.0, 54....
-## $ length_cm         &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
-## $ width_cm          &lt;dbl&gt; 74.6, 33.3, 36.8, 78.7, 54.0, 89.9, 200.0, 38.1, ...
-## $ seat_height_cm    &lt;lgl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N...
-## $ purchase          &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, ...
-## $ gift              &lt;lgl&gt; TRUE, FALSE, FALSE, TRUE, TRUE, FALSE, TRUE, TRUE...
-## $ exchange          &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, TRUE, FALSE, FALSE, F...
-## $ classification    &lt;chr&gt; &quot;Painting&quot;, &quot;Painting&quot;, &quot;Painting&quot;, &quot;Painting&quot;, &quot;...
-## $ department        &lt;chr&gt; &quot;Painting &amp; Sculpture&quot;, &quot;Painting &amp; Sculpture&quot;, &quot;...
-## $ decade_acquired   &lt;fct&gt; Thirties, Seventies, Sixties, Fifties, Thirties, ...
-## $ continent         &lt;fct&gt; Western Europe, Western Europe, Western Europe, W...</code></pre>
-<pre><code>## # A tibble: 6 x 25
-##   title artist birth_country artist_birth_ye~ artist_death_ye~ num_artists
-##   &lt;chr&gt; &lt;chr&gt;  &lt;fct&gt;                    &lt;dbl&gt;            &lt;dbl&gt;       &lt;dbl&gt;
-## 1 &quot;Rop~ Joan ~ Spanish                   1893             1983           1
-## 2 &quot;Fir~ Paul ~ German                    1879             1940           1
-## 3 &quot;Por~ Paul ~ German                    1879             1940           1
-## 4 &quot;Gui~ Pablo~ Spanish                   1881             1973           1
-## 5 &quot;Gra~ Arthu~ American                  1880             1946           1
-## 6 &quot;\&quot;M~ Franc~ French                    1879             1953           1
-## # ... with 19 more variables: n_female_artists &lt;dbl&gt;, n_male_artists &lt;dbl&gt;,
-## #   artist_gender &lt;fct&gt;, year_acquired &lt;dbl&gt;, year_created &lt;dbl&gt;,
-## #   circumference_cm &lt;lgl&gt;, depth_cm &lt;dbl&gt;, diameter_cm &lt;lgl&gt;, height_cm &lt;dbl&gt;,
-## #   length_cm &lt;lgl&gt;, width_cm &lt;dbl&gt;, seat_height_cm &lt;lgl&gt;, purchase &lt;lgl&gt;,
-## #   gift &lt;lgl&gt;, exchange &lt;lgl&gt;, classification &lt;chr&gt;, department &lt;chr&gt;,
-## #   decade_acquired &lt;fct&gt;, continent &lt;fct&gt;</code></pre>
+#unique(artist_by_country_cl$artist)</code></pre>
+<h1 id="isolating-african-paintings">Isolating African Paintings</h1>
+<p>Below you can see all of the paintings at the MoMA when this data was created. You can see the authors in the legend and hover over to see the title of the painting.</p>
+<pre class="r"><code>plotly::ggplotly(artist_by_country_cl %&gt;%
+  dplyr::filter(continent == &quot;Africa&quot;) %&gt;%
+  ggplot(aes(x=year_created,
+             y=year_acquired, 
+             color=artist,
+             title=title)) +
+  geom_jitter(aes(size=2), 
+              show.legend = FALSE) +
+    labs(title=&quot;Paintings From African Artists at the Moma&quot;,
+         y=&quot;Year Acquired&quot;,
+         x=&quot;Year Created&quot;) +
+    theme(axis.text = element_text(face=&quot;bold&quot;)) +
+  #ggrepel::geom_label_repel(aes(label = title),
+  #                          box.padding   = 0.85, 
+  #                          point.padding = .6,
+  #                          min.segment.length = Inf,
+  #                          position = &quot;identity&quot;,
+  #                          segment.color = &#39;grey50&#39;) +
+  viridis::scale_color_viridis(discrete = TRUE),
+  tooltip=c(&quot;artist&quot;, 
+            &quot;title&quot;,
+            &quot;year_acquired&quot;))</code></pre>
+<div id="htmlwidget-1" style="width:672px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"data":[{"x":[1989.94641136676],"y":[2001.85385346226],"text":"year_acquired: 2002<br />artist: Chéri Samba<br />title: \"Condemnation without Judgment\"","type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(68,1,84,1)","opacity":1,"size":17.1421753925017,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(68,1,84,1)"}},"hoveron":"points","name":"Chéri Samba","legendgroup":"Chéri Samba","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[1961.60024108067],"y":[1962.9791303739],"text":"year_acquired: 1963<br />artist: J. Trevor Wood<br />title: Fourth-Dimensional Pebble Beach","type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(65,68,135,1)","opacity":1,"size":17.1421753925017,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(65,68,135,1)"}},"hoveron":"points","name":"J. Trevor Wood","legendgroup":"J. Trevor Wood","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[1962.25956766829],"y":[1963.35630663782],"text":"year_acquired: 1963<br />artist: Joseph Ndandarika<br />title: Bushmen Running from the Rain","type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(42,120,142,1)","opacity":1,"size":17.1421753925017,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(42,120,142,1)"}},"hoveron":"points","name":"Joseph Ndandarika","legendgroup":"Joseph Ndandarika","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[1995.1780347988,2004.50438361838,2009.35262934938],"y":[2005.27786917258,2005.93746123016,2009.62043881081],"text":["year_acquired: 2005<br />artist: Marlene Dumas<br />title: The Painter","year_acquired: 2006<br />artist: Marlene Dumas<br />title: Jen","year_acquired: 2010<br />artist: Marlene Dumas<br />title: Wall Wailing"],"type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(34,168,132,1)","opacity":1,"size":17.1421753925017,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(34,168,132,1)"}},"hoveron":"points","name":"Marlene Dumas","legendgroup":"Marlene Dumas","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[1954.54676784798],"y":[1959.79170044437],"text":"year_acquired: 1960<br />artist: Sam Joseph Ntiro<br />title: Men Taking Banana Beer to Bridge by Night","type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(122,209,81,1)","opacity":1,"size":17.1421753925017,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(122,209,81,1)"}},"hoveron":"points","name":"Sam Joseph Ntiro","legendgroup":"Sam Joseph Ntiro","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null},{"x":[1962.73848657832],"y":[1962.66881541628],"text":"year_acquired: 1963<br />artist: Thomas Mukarobgwa<br />title: View You See in the Middle of a Tree","type":"scatter","mode":"markers","marker":{"autocolorscale":false,"color":"rgba(253,231,37,1)","opacity":1,"size":17.1421753925017,"symbol":"circle","line":{"width":1.88976377952756,"color":"rgba(253,231,37,1)"}},"hoveron":"points","name":"Thomas Mukarobgwa","legendgroup":"Thomas Mukarobgwa","showlegend":true,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":43.7625570776256,"r":7.30593607305936,"b":40.1826484018265,"l":48.9497716894977},"plot_bgcolor":"rgba(235,235,235,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"title":{"text":"Paintings From African Artists at the Moma","font":{"color":"rgba(0,0,0,1)","family":"","size":17.5342465753425},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[1951.80647477292,2012.09292242445],"tickmode":"array","ticktext":["1960","1970","1980","1990","2000","2010"],"tickvals":[1960,1970,1980,1990,2000,2010],"categoryorder":"array","categoryarray":["1960","1970","1980","1990","2000","2010"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"y","title":{"text":"Year Created","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[1957.30026352605,2012.11187572913],"tickmode":"array","ticktext":["1960","1970","1980","1990","2000","2010"],"tickvals":[1960,1970,1980,1990,2000,2010],"categoryorder":"array","categoryarray":["1960","1970","1980","1990","2000","2010"],"nticks":null,"ticks":"outside","tickcolor":"rgba(51,51,51,1)","ticklen":3.65296803652968,"tickwidth":0.66417600664176,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(255,255,255,1)","gridwidth":0.66417600664176,"zeroline":false,"anchor":"x","title":{"text":"Year Acquired","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":null,"line":{"color":null,"width":0,"linetype":[]},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":true,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895},"y":1},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","showSendToCloud":false},"source":"A","attrs":{"5e24574829ce":{"size":{},"x":{},"y":{},"colour":{},"title":{},"type":"scatter"}},"cur_data":"5e24574829ce","visdat":{"5e24574829ce":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<h1 id="examples-of-african-work-in-the-moma">Examples of African Work in the MoMA</h1>
+<p>Below are some examples of artwork from African artists within the MoMA. From the limited selection detailed above. Essentially, I hope this highlights the need of MoMA to increase the amount of African artists they feature.</p>
+<div class="figure">
+<img src="/images/post/thepainter.jpg" alt="The Painter, Marlene Dumas" />
+<p class="caption">The Painter, Marlene Dumas</p>
 </div>
-<div id="isolating-countries-of-interest-africa-south-america-middle-eastern" class="section level2">
-<h2>isolating countries of interest (Africa, South America, Middle Eastern)</h2>
-<p>Lets just ID the paintings</p>
+<div class="figure">
+<img src="/images/post/condemnation_nojudge.jpg" alt="Condemnation withouth Judgement, from Cheri Samba" />
+<p class="caption">Condemnation withouth Judgement, from Cheri Samba</p>
+</div>
+<div class="figure">
+<img src="/images/post/men_take_bannas.jpg" alt="Men Taking Bananas Beer.., from Sam Joseph Ntiro" />
+<p class="caption">Men Taking Bananas Beer.., from Sam Joseph Ntiro</p>
+</div>
 </div>
 </div>

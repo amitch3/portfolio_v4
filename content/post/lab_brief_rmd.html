@@ -1,21 +1,1467 @@
 ---
-title: "examples"
-author: "AJ Mitchell"
-date: "May 9, 2021"
-image: images/post/20210508_124638.jpg
+author: AJ Mitchell
 categories:
-  - examples
-output:
-  html_document: default
-  pdf_document: default
-
+- Top Labs
+description: Lab Brief Visualization.
+draft: false
+image: images/post/lab_brief_img.png
+tags:
+- west coast wine
+- Brief Lab
+title: 'Lab Brief'
 ---
 
 
 
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
+<p>In the original lab, I was interested in showing that California wines are priced higher than Oregon Wines, but are not rated as well. My goal was to show that California wines are overpriced.</p>
+<p>This information was for a general audience, particularly someone is struggling in the wine section at Fred Meyer (bc we all buy wine from Fred Meyer, right?). Example images of the lab can be found below..</p>
+<div id="figures-from-original-lab" class="section level2">
+<h2>Figures from original Lab</h2>
+<ul>
+<li>California wines are more expensive but doesn't give much insight into the rating of the wine</li>
+</ul>
+<div class="figure">
+<img src="/images/post/lab_brief_img.png" alt="Differences in the average quality and pricing of wines from California and Oregon" />
+<p class="caption">Differences in the average quality and pricing of wines from California and Oregon</p>
 </div>
-<div id="section" class="section level1">
-<h1></h1>
+<style>
+div.blue pre { background-color:lightblue; }
+div.blue pre.r { background-color:grey77; }
+</style>
+</div>
+</div>
+<div id="reevaluating-over-priced-west-coast-wines" class="section level1">
+<h1>Reevaluating Over Priced West Coast Wines</h1>
+<ul>
+<li><p>In the reevaluation of the data, let's make a visualization that provides more insight for the general population</p></li>
+<li><p><strong>I will also render tables at the bottom that will represent the 4th feature and materials from lab_05 about tables</strong></p></li>
+</ul>
+<div class="blue">
+<h2 id="loading-the-data">Loading the Data</h2>
+<pre class="r"><code>library(tidyverse)
+library(gt)
+library(ggpubr)</code></pre>
+<pre class="r"><code># loading the tidytuesday data
+
+wine_ratings &lt;- readr::read_csv(&quot;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-05-28/winemag-data-130k-v2.csv&quot;)</code></pre>
+<h2 id="wrangling-the-data">wrangling the data</h2>
+<p>The data is already &quot;cleaned&quot; according to the <code>clean_names</code> function within the janitor package, so I don't have to do much below apart from assigning and selecting variables of interest for the visualization.</p>
+<pre class="r"><code># removing variables of un-interest
+
+wine_ratings_selecvars &lt;- wine_ratings %&gt;%
+  select(-X1, -taster_name, -taster_twitter_handle, -description)
+
+#glimpse(wine_ratings_selecvars)
+
+
+# what are unique values for original variables in wine data:
+# designation has 36980 unique values
+# 43 total countries included
+# ~ 1230 region_1s
+# ~ 16 region 2s
+# ~ 425 provinces
+# ~ 708 varieties of wine
+# ~ 17000 wineries
+
+
+# based on these numbers, lets select out wines from the selected region / coast
+# I&#39;m going only going to visualize wines from regions within California and Oregon
+
+wine_ratings_selecvars &lt;- wine_ratings_selecvars %&gt;%
+  mutate(coast = case_when(
+    str_detect(region_2 , &quot;Napa|Sonoma|California Other|Sierra Foothills|Napa-Sonoma&quot;) ~ &quot;Cali&quot;,
+    str_detect(region_2, &quot;Willamette Valley|Oregon Other|Southern Oregon|Washington Other|Columbia Valley&quot;) ~ &quot;PNW&quot;,
+    str_detect(region_2, &quot;New York Other|Finger Lakes|Long Island&quot;) ~ &quot;NorEa&quot;,
+    str_detect(region_2, &quot;North Coast&quot;) ~ &quot;NorCo&quot;,
+    str_detect(region_2, &quot;South Coast&quot;) ~ &quot;SoCo&quot;,
+    str_detect(region_2, &quot;Central Coast&quot;) ~ &quot;CenCo&quot;,
+    TRUE ~ &quot;Other&quot;))
+
+
+
+# note that we have no nasty wines in this data based on rankings from WineSearcher.com
+
+wine_ratings_selecvars &lt;- wine_ratings_selecvars %&gt;%
+  mutate(rating_class = case_when(points &lt;= 70 ~ &quot;Ewwuhh&quot;,
+                                  points &gt;= 71 &amp;
+                                    points &lt;= 79 ~ &quot;Meh&quot;,
+                                  points &gt;= 80 &amp;
+                                    points &lt;= 84 ~ &quot;Everyday Sipper&quot;,
+                                  points &gt;= 85 &amp; 
+                                    points &lt;= 89 ~ &quot;Fancy&quot;,
+                                  points &gt;= 90 &amp;
+                                    points &lt;= 95 ~ &quot;Very Fancy&quot;,
+                                  points &gt;= 96 &amp;
+                                    points &lt;= 100 ~ &quot;Top Shelf&quot;))
+
+
+# assigning levels for visualization order
+wine_ratings_selecvars$rating_class  &lt;- factor(wine_ratings_selecvars$rating_class, levels = c(&quot;Ewwuhh&quot;,
+                                                          &quot;Meh&quot;, 
+                                                          &quot;Everyday Sipper&quot;,
+                                                          &quot;Fancy&quot;,
+                                                          &quot;Very Fancy&quot;,
+                                                          &quot;Top Shelf&quot;))
+# price per point 
+# something that I did not do here was divide the ratio by the average price and average rating - that may be more informative
+wine_ratings_selecvars &lt;- wine_ratings_selecvars %&gt;%
+  mutate(pp_ratio = points/price)</code></pre>
+<h1 id="recalling-the-last-lab">Recalling the last lab</h1>
+<p>Remember that information from classification groups for determining the <code>rating_class</code> were made based on information in the previous lab.</p>
+<p>Please visit <a href="https://winefolly.com/tips/wine-ratings-explained/" class="uri">https://winefolly.com/tips/wine-ratings-explained/</a> for a refresher!</p>
+<p>Below I have remade these same categories for new visualization.</p>
+<pre class="r"><code>#names(wine_ratings_selecvars)
+
+#mean(wine_ratings_selecvars$price,
+ #    na.rm=TRUE)
+
+summarized_wine &lt;- wine_ratings_selecvars %&gt;%
+  group_by(rating_class) %&gt;%
+  summarise(mean_price = mean(price,
+                        na.rm = TRUE),
+            mean_rating = mean(points,
+                               na.rm=TRUE))</code></pre>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<pre class="r"><code>#summarized_wine
+
+wine_ratings_selecvars&lt;- wine_ratings_selecvars %&gt;%
+  mutate(everdaysipp_2 = case_when(price &lt;= 18.7 ~ &quot;Below Average&quot;,
+                                 price &gt;= 18.8 &amp;
+                                  price &lt;= 25.8 ~ &quot;About Average&quot;,
+                                   price &gt;= 25.9 ~ &quot;Above Average&quot;),
+         fancy_2 = case_when(price &lt;= 18.9 ~ &quot;Below Average&quot;,
+                           price &gt;= 19.0 &amp; 
+                             price &lt;= 50.3 ~ &quot;About Average&quot;,
+                             price &gt;= 50.4 ~ &quot;Above Average&quot;), 
+         very_fancy_2 = case_when(price &lt;= 50.3 ~ &quot;Below Average&quot;, 
+                                price &gt;=50.4 &amp; 
+                                  price &lt;= 80 ~ &quot;About Average&quot;,
+                                price &gt;= 81 ~ &quot;Above Average&quot;))
+
+
+wine_ratings_selecvars$everdaysipp &lt;- factor(wine_ratings_selecvars$everdaysipp_2, levels = c(&quot;Below Average&quot;, 
+                                                                                              &quot;About Average&quot;,
+                                                                                              &quot;Above Average&quot;))
+
+wine_ratings_selecvars$fancy&lt;- factor(wine_ratings_selecvars$fancy_2, levels = c(&quot;Below Average&quot;, 
+                                                                                 &quot;About Average&quot;,
+                                                                                 &quot;Above Average&quot;))
+
+wine_ratings_selecvars$very_fancy &lt;- factor(wine_ratings_selecvars$very_fancy_2, levels = c(&quot;Below Average&quot;, 
+                                                                                            &quot;About Average&quot;,
+                                                                                            &quot;Above Average&quot;))
+
+
+#unique(wine_ratings_selecvars$coast)
+
+#wine_ratings_selecvars %&gt;%
+#  names()</code></pre>
+<pre class="r"><code>vfance_2 &lt;- wine_ratings_selecvars %&gt;%
+  filter(rating_class == &quot;Very Fancy&quot;) %&gt;%
+  filter(coast %in% c(&quot;PNW&quot;, &quot;Cali&quot;)) %&gt;%
+  filter(!is.na(price)) %&gt;%
+  ggplot(aes(x=rating_class, 
+             y=price,
+             color=very_fancy_2)) +
+  geom_jitter( na.rm = TRUE) +
+  labs(x=&quot;Rating Category&quot;,
+       y=&quot;Price&quot;,
+       title= &quot;Very Fancy Wine Prices&quot;) +
+  theme(axis.text = element_text(face=&quot;bold&quot;)) +
+  facet_wrap(~ coast)
+
+
+fance_2 &lt;- wine_ratings_selecvars %&gt;%
+  filter(rating_class == &quot;Fancy&quot;) %&gt;%
+  filter(coast %in% c(&quot;PNW&quot;, &quot;Cali&quot;)) %&gt;%
+  filter(!is.na(price)) %&gt;%
+  ggplot(aes(x=rating_class, 
+             y=price,
+             color=fancy_2)) +
+  geom_jitter( na.rm = TRUE) +
+  labs(x=&quot;Rating Category&quot;,
+       y=&quot;Price&quot;,
+       title= &quot;Fancy Drinking Wine Prices&quot;) +
+  theme(axis.text = element_text(face=&quot;bold&quot;)) +
+  facet_wrap(~ coast)
+
+
+everyd_sipp_2 &lt;- wine_ratings_selecvars %&gt;%
+  filter(rating_class == &quot;Everyday Sipper&quot;) %&gt;%
+  filter(coast %in% c(&quot;PNW&quot;, &quot;Cali&quot;)) %&gt;%
+  filter(!is.na(price)) %&gt;%
+  ggplot(aes(x=rating_class, 
+             y=price,
+             color=everdaysipp_2)) +
+  geom_jitter(na.rm = TRUE) +
+  labs(x=&quot;Rating Category&quot;,
+       y=&quot;Price&quot;,
+       title= &quot;Everyday Drinking Wine Prices&quot;) +
+  theme(axis.text = element_text(face=&quot;bold&quot;)) +
+  facet_wrap(~ coast)</code></pre>
+<pre class="r"><code>ggpubr::ggarrange(everyd_sipp_2, 
+                  fance_2, 
+                  vfance_2, 
+                  common.legend = TRUE,
+                  labels = &quot;auto&quot;, 
+                  legend = c(&quot;bottom&quot;), 
+                  ncol = 3,
+                  nrow = 1)</code></pre>
+<p><img src="/post/lab_brief_rmd_files/figure-html/unnamed-chunk-6-1.png" width="1248" /></p>
+<h1 id="tables-for-the-figure-above">Tables for the figure above</h1>
+<p><strong>This section draws on information and challenges from Lab_05</strong></p>
+<p>One thing that would be useful to know about these visualizations is the amount of wine within each group. Below, I have listed out the total amounts of wine within each group in order to provide the reader with more information about how the groups are set up.</p>
+<p>I found adding the table extremely beneficial because when you look at the raw numbers, it kind of looks like ratios may provide more accurate insights into which region truly has the more overpriced wines.</p>
+<pre class="r"><code>#wine_ratings_selecvars$province
+
+# table for everyday wines
+
+wine_ratings_selecvars %&gt;%
+  filter(rating_class == &quot;Everyday Sipper&quot;) %&gt;%
+  filter(coast %in% c(&quot;PNW&quot;,
+                      &quot;Cali&quot;)) %&gt;%
+  filter(!is.na(price)) %&gt;%
+  group_by(coast, everdaysipp_2) %&gt;%
+  count(everdaysipp_2,
+        mean(price,
+             na.rm=T)) %&gt;%
+  gt(groupname_col = wine_ratings_selecvars$coast) %&gt;% 
+  #tab_row_group(group = coast) %&gt;%
+  fmt_number(columns = &#39;mean(price, na.rm = T)&#39;,
+    decimals = 2,
+    suffixing = TRUE) %&gt;%
+  tab_header(title = md(&quot;**Prices of Everday Wines from California and Oregon**&quot;),
+             subtitle = md(&quot;Grouped by Proximity to Average Price&quot;)) %&gt;%
+  cols_label(everdaysipp_2 = md(&quot; _Price Categorization_&quot;),
+             n = md(&quot;_Number of Wines within Category_&quot;),
+             coast = md(&quot;_Region_&quot;),
+             &#39;mean(price, na.rm = T)&#39; = md(&quot;_Avg Price per Category_&quot;))</code></pre>
+<style>html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
+
+#tknpaqozpf .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#tknpaqozpf .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#tknpaqozpf .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#tknpaqozpf .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 4px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#tknpaqozpf .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#tknpaqozpf .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#tknpaqozpf .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#tknpaqozpf .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#tknpaqozpf .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#tknpaqozpf .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#tknpaqozpf .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#tknpaqozpf .gt_group_heading {
+  padding: 8px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#tknpaqozpf .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#tknpaqozpf .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#tknpaqozpf .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#tknpaqozpf .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#tknpaqozpf .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 12px;
+}
+
+#tknpaqozpf .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#tknpaqozpf .gt_first_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+}
+
+#tknpaqozpf .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#tknpaqozpf .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#tknpaqozpf .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#tknpaqozpf .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#tknpaqozpf .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#tknpaqozpf .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding: 4px;
+}
+
+#tknpaqozpf .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#tknpaqozpf .gt_sourcenote {
+  font-size: 90%;
+  padding: 4px;
+}
+
+#tknpaqozpf .gt_left {
+  text-align: left;
+}
+
+#tknpaqozpf .gt_center {
+  text-align: center;
+}
+
+#tknpaqozpf .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#tknpaqozpf .gt_font_normal {
+  font-weight: normal;
+}
+
+#tknpaqozpf .gt_font_bold {
+  font-weight: bold;
+}
+
+#tknpaqozpf .gt_font_italic {
+  font-style: italic;
+}
+
+#tknpaqozpf .gt_super {
+  font-size: 65%;
+}
+
+#tknpaqozpf .gt_footnote_marks {
+  font-style: italic;
+  font-size: 65%;
+}
+</style>
+<div id="tknpaqozpf" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
+  <thead class="gt_header">
+    <tr>
+      <th colspan="4" class="gt_heading gt_title gt_font_normal" style><strong>Prices of Everday Wines from California and Oregon</strong></th>
+    </tr>
+    <tr>
+      <th colspan="4" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border" style>Grouped by Proximity to Average Price</th>
+    </tr>
+  </thead>
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1"><em>Region</em></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1"><em>Price Categorization</em></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1"><em>Avg Price per Category</em></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><em>Number of Wines within Category</em></th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr>
+      <td class="gt_row gt_left">Cali</td>
+      <td class="gt_row gt_left">About Average</td>
+      <td class="gt_row gt_right">22.03</td>
+      <td class="gt_row gt_center">532</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left">Cali</td>
+      <td class="gt_row gt_left">Above Average</td>
+      <td class="gt_row gt_right">40.65</td>
+      <td class="gt_row gt_center">739</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left">Cali</td>
+      <td class="gt_row gt_left">Below Average</td>
+      <td class="gt_row gt_right">12.48</td>
+      <td class="gt_row gt_center">1230</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left">PNW</td>
+      <td class="gt_row gt_left">About Average</td>
+      <td class="gt_row gt_right">22.15</td>
+      <td class="gt_row gt_center">185</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left">PNW</td>
+      <td class="gt_row gt_left">Above Average</td>
+      <td class="gt_row gt_right">34.21</td>
+      <td class="gt_row gt_center">164</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left">PNW</td>
+      <td class="gt_row gt_left">Below Average</td>
+      <td class="gt_row gt_right">13.32</td>
+      <td class="gt_row gt_center">275</td>
+    </tr>
+  </tbody>
+  
+  
+</table></div>
+<pre class="r"><code># table for fancy wines
+
+wine_ratings_selecvars %&gt;%
+  filter(rating_class == &quot;Fancy&quot;) %&gt;%
+  filter(coast %in% c(&quot;PNW&quot;,
+                      &quot;Cali&quot;)) %&gt;%
+  filter(!is.na(price)) %&gt;%
+  group_by(coast, fancy_2) %&gt;%
+  count(fancy_2,
+        mean(price,
+             na.rm=T)) %&gt;%
+  gt(groupname_col = wine_ratings_selecvars$coast) %&gt;% 
+  fmt_number(columns = &#39;mean(price, na.rm = T)&#39;,
+    decimals = 2,
+    suffixing = TRUE) %&gt;%
+  tab_header(title = md(&quot;**Prices of Fancy Wine from California and Oregon**&quot;),
+             subtitle = md(&quot;Grouped by Proximity to Average Price&quot;)) %&gt;%
+  cols_label(fancy_2 = md(&quot; _Price Categorization_&quot;),
+             n = md(&quot;_Number of Wines within Category_&quot;),
+             coast = md(&quot;_Region_&quot;),
+             &#39;mean(price, na.rm = T)&#39; = md(&quot;_Avg Price per Category_&quot;))</code></pre>
+<style>html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
+
+#srcnwssaxu .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#srcnwssaxu .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#srcnwssaxu .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#srcnwssaxu .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 4px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#srcnwssaxu .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#srcnwssaxu .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#srcnwssaxu .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#srcnwssaxu .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#srcnwssaxu .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#srcnwssaxu .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#srcnwssaxu .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#srcnwssaxu .gt_group_heading {
+  padding: 8px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#srcnwssaxu .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#srcnwssaxu .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#srcnwssaxu .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#srcnwssaxu .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#srcnwssaxu .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 12px;
+}
+
+#srcnwssaxu .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#srcnwssaxu .gt_first_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+}
+
+#srcnwssaxu .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#srcnwssaxu .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#srcnwssaxu .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#srcnwssaxu .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#srcnwssaxu .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#srcnwssaxu .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding: 4px;
+}
+
+#srcnwssaxu .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#srcnwssaxu .gt_sourcenote {
+  font-size: 90%;
+  padding: 4px;
+}
+
+#srcnwssaxu .gt_left {
+  text-align: left;
+}
+
+#srcnwssaxu .gt_center {
+  text-align: center;
+}
+
+#srcnwssaxu .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#srcnwssaxu .gt_font_normal {
+  font-weight: normal;
+}
+
+#srcnwssaxu .gt_font_bold {
+  font-weight: bold;
+}
+
+#srcnwssaxu .gt_font_italic {
+  font-style: italic;
+}
+
+#srcnwssaxu .gt_super {
+  font-size: 65%;
+}
+
+#srcnwssaxu .gt_footnote_marks {
+  font-style: italic;
+  font-size: 65%;
+}
+</style>
+<div id="srcnwssaxu" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
+  <thead class="gt_header">
+    <tr>
+      <th colspan="4" class="gt_heading gt_title gt_font_normal" style><strong>Prices of Fancy Wine from California and Oregon</strong></th>
+    </tr>
+    <tr>
+      <th colspan="4" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border" style>Grouped by Proximity to Average Price</th>
+    </tr>
+  </thead>
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1"><em>Region</em></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1"><em>Price Categorization</em></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1"><em>Avg Price per Category</em></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><em>Number of Wines within Category</em></th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr>
+      <td class="gt_row gt_left">Cali</td>
+      <td class="gt_row gt_left">About Average</td>
+      <td class="gt_row gt_right">31.72</td>
+      <td class="gt_row gt_center">5924</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left">Cali</td>
+      <td class="gt_row gt_left">Above Average</td>
+      <td class="gt_row gt_right">72.55</td>
+      <td class="gt_row gt_center">1206</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left">Cali</td>
+      <td class="gt_row gt_left">Below Average</td>
+      <td class="gt_row gt_right">13.93</td>
+      <td class="gt_row gt_center">2134</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left">PNW</td>
+      <td class="gt_row gt_left">About Average</td>
+      <td class="gt_row gt_right">30.26</td>
+      <td class="gt_row gt_center">4748</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left">PNW</td>
+      <td class="gt_row gt_left">Above Average</td>
+      <td class="gt_row gt_right">64.22</td>
+      <td class="gt_row gt_center">296</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left">PNW</td>
+      <td class="gt_row gt_left">Below Average</td>
+      <td class="gt_row gt_right">14.25</td>
+      <td class="gt_row gt_center">2053</td>
+    </tr>
+  </tbody>
+  
+  
+</table></div>
+<pre class="r"><code># table for Very Fancy Wines
+
+wine_ratings_selecvars %&gt;%
+  filter(rating_class == &quot;Very Fancy&quot;) %&gt;%
+  filter(coast %in% c(&quot;PNW&quot;,
+                      &quot;Cali&quot;)) %&gt;%
+  filter(!is.na(price)) %&gt;%
+  group_by(coast, very_fancy_2) %&gt;%
+  count(very_fancy_2,
+        mean(price,
+             na.rm=T)) %&gt;%
+  gt(groupname_col = wine_ratings_selecvars$coast) %&gt;% 
+  #tab_row_group(group = coast) %&gt;%
+  fmt_number(columns = &#39;mean(price, na.rm = T)&#39;,
+    decimals = 2,
+    suffixing = TRUE) %&gt;%
+  tab_header(title = md(&quot;**Prices of _Very_ Fancy Wine from California and Oregon**&quot;),
+             subtitle = md(&quot;Grouped by Proximity to Average Price&quot;)) %&gt;%
+  cols_label(very_fancy_2 = md(&quot; _Price Categorization_&quot;),
+             n = md(&quot;_Number of Wines within Category_&quot;),
+             coast = md(&quot;_Region_&quot;),
+             &#39;mean(price, na.rm = T)&#39; = md(&quot;_Avg Price per Category_&quot;))</code></pre>
+<style>html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
+
+#qghczwtkzx .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#qghczwtkzx .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#qghczwtkzx .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#qghczwtkzx .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 4px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#qghczwtkzx .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qghczwtkzx .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#qghczwtkzx .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#qghczwtkzx .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#qghczwtkzx .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#qghczwtkzx .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#qghczwtkzx .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#qghczwtkzx .gt_group_heading {
+  padding: 8px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#qghczwtkzx .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#qghczwtkzx .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#qghczwtkzx .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#qghczwtkzx .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#qghczwtkzx .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 12px;
+}
+
+#qghczwtkzx .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qghczwtkzx .gt_first_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+}
+
+#qghczwtkzx .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qghczwtkzx .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#qghczwtkzx .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#qghczwtkzx .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qghczwtkzx .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#qghczwtkzx .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding: 4px;
+}
+
+#qghczwtkzx .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#qghczwtkzx .gt_sourcenote {
+  font-size: 90%;
+  padding: 4px;
+}
+
+#qghczwtkzx .gt_left {
+  text-align: left;
+}
+
+#qghczwtkzx .gt_center {
+  text-align: center;
+}
+
+#qghczwtkzx .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#qghczwtkzx .gt_font_normal {
+  font-weight: normal;
+}
+
+#qghczwtkzx .gt_font_bold {
+  font-weight: bold;
+}
+
+#qghczwtkzx .gt_font_italic {
+  font-style: italic;
+}
+
+#qghczwtkzx .gt_super {
+  font-size: 65%;
+}
+
+#qghczwtkzx .gt_footnote_marks {
+  font-style: italic;
+  font-size: 65%;
+}
+</style>
+<div id="qghczwtkzx" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
+  <thead class="gt_header">
+    <tr>
+      <th colspan="4" class="gt_heading gt_title gt_font_normal" style><strong>Prices of <em>Very</em> Fancy Wine from California and Oregon</strong></th>
+    </tr>
+    <tr>
+      <th colspan="4" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border" style>Grouped by Proximity to Average Price</th>
+    </tr>
+  </thead>
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1"><em>Region</em></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1"><em>Price Categorization</em></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1"><em>Avg Price per Category</em></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1"><em>Number of Wines within Category</em></th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr>
+      <td class="gt_row gt_left">Cali</td>
+      <td class="gt_row gt_left">About Average</td>
+      <td class="gt_row gt_right">64.73</td>
+      <td class="gt_row gt_center">2465</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left">Cali</td>
+      <td class="gt_row gt_left">Above Average</td>
+      <td class="gt_row gt_right">121.91</td>
+      <td class="gt_row gt_center">1345</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left">Cali</td>
+      <td class="gt_row gt_left">Below Average</td>
+      <td class="gt_row gt_right">35.40</td>
+      <td class="gt_row gt_center">5318</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left">PNW</td>
+      <td class="gt_row gt_left">About Average</td>
+      <td class="gt_row gt_right">63.41</td>
+      <td class="gt_row gt_center">1142</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left">PNW</td>
+      <td class="gt_row gt_left">Above Average</td>
+      <td class="gt_row gt_right">100.50</td>
+      <td class="gt_row gt_center">304</td>
+    </tr>
+    <tr>
+      <td class="gt_row gt_left">PNW</td>
+      <td class="gt_row gt_left">Below Average</td>
+      <td class="gt_row gt_right">32.98</td>
+      <td class="gt_row gt_center">4382</td>
+    </tr>
+  </tbody>
+  
+  
+</table></div>
+</div>
 </div>

@@ -25,7 +25,7 @@ title: Publications
 
 **The Influence of Maternal High Fat Diet Consumption on Neurobehavioral Development** 
 AJ Mitchell, Matthew Selby, and Elinor L Sullivan
-The Neuroscience of Development (January 2021)
+Chapter 51; The Neuroscience of Development. (January 2021)
 
 
 

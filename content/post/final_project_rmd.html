@@ -9,6 +9,10 @@ tags:
 - Calories from fat
 - Calories from Sugar
 categories: Top Labs
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
 ---
 
 
@@ -17,21 +21,36 @@ categories: Top Labs
 <h1>Introduction</h1>
 <p>My final project will investigate the caloric contributions from fast food restaurant. These data come from the 2018 TidyTuesday Dataset title <strong>Fast Food Calories</strong>. This is for the general public, and to expand on what was started in the franchise opportunity website. If you follow the link to look at where the data was used <a href="https://www.franchiseopportunities.com/blog/general-franchise-information/fast-food-calorie-comparison-charts">here</a>, you can see that they predominantly look at caloric content of each food item. This is a very zoomed out perspective, and doesn't offer much insight into the nutritional value of the fast food items. I also did not care to break down by restaurant at this level but have ideas about how to capture it.</p>
 <div class="figure">
-<img src="/images/post/wheresthezalad.png" alt="No Zalad Included" />
-<p class="caption">No Zalad Included</p>
+<img src="/images/post/wheresthezalad.png" alt="*Zalad not Included" />
+<p class="caption">*Zalad not Included</p>
 </div>
-<p>My research focuses on understanding the impact of Western Style Diet on brain development. Specifically, I study how consuming this diet during pregnancy can impact brain development and behavioral outcomes. We have learned that the increased levels of saturated fats and the additional sugars within the WSD are strongly related to differences in brain development and behavioral outcomes of children. So, iin order to expand, I wanted to identify which foods have higher amounts of sugars and saturated fats.</p>
+</div>
+<div id="expanding-on-the-data-from-franchise-oppotunities" class="section level1">
+<h1>Expanding on the data from Franchise Oppotunities</h1>
+<p>My research focuses on understanding the impact of Western Style Diet on brain development. Specifically, I study how consuming the WSD diet during pregnancy can impact brain development and behavioral outcomes. We have learned that the increased levels of saturated fats and the additional sugars within the WSD are strongly related to differences in brain development and behavioral outcomes of children. So, in order to expand, we need to identify which foods have higher amounts of sugars and saturated fats.</p>
 <div class="figure">
 <img src="/images/post/fig3_mWSD.png" alt="Mitchell 2021" />
 <p class="caption">Mitchell 2021</p>
 </div>
-<p>A stacked barchart is used to convey the information, and I felt this was best because it conveys several bits of information within one 'swoop'. It's kind of difficult to look at at first, but once you understand what the colors are, i think it becomes very intuitive. The <code>green</code> represents the average caloric contribution <em>(based on a 2000 calorie diet)</em> of the food category, and the colors represent how much sugar (<code>blue</code>), and how much saturated fat (<code>red</code>) contributes to percentage in <code>green</code>. There are other contributors that have been excluded (like protein) that account for the extra space.</p>
 </div>
-<div id="loading-the-fast-food-data" class="section level1">
-<h1>Loading the fast food data</h1>
+<div id="goals-of-figure" class="section level1">
+<h1>Goals of Figure</h1>
+<p>A <strong>stacked barchart</strong> is used to convey the information described above. I chose this type of visual for it's consistency with the website data in addition to it's ability to conveys several facets of information within one 'swoop'. For example, it details information related to total caloric consumption, sugar, and saturated fats. It mmay take a minute to orient to but once you understand what the colors represent, it becomes very intuitive.</p>
+<p>The <code>green</code> represents the average caloric contribution <em>(based on a 2000 calorie diet)</em> of the food category, and the colors represent how much sugar (<code>blue</code>), and how much saturated fat (<code>red</code>) contributes to percentage in <code>green</code>. There are other contributors that have been excluded (like protein) that account for the extra space.</p>
+<p>Before we get to the figure, I will cover how the data was gathered, cleaned, and manipulated.</p>
+</div>
+<div id="informing-the-general-public" class="section level1">
+<h1>Informing the General Public</h1>
+<p>The purpose of this is to create a simple, yet informative figure that <strong>conveys the amount of saturated fats and sugars within each of the common fast food items</strong>. Nutrition and neuroscience literature has shown that the factors that impact brain function are the increased sugars and additional saturated fats.</p>
+<p>Below, I have listed out the ways the metrics were calculated. These methods were based on information collected from the Seattle School Districts evaluating healthy lunch items in school children. The PDF can be found <a href="http://district.schoolnutritionandfitness.com/visaliausd/files/SB12Howtocalculatefat.pdf">here</a>.</p>
+<style>
+div.blue pre { background-color:lightblue; }
+div.blue pre.r { background-color:grey77; }
+</style>
+<div class="blue">
+<h1 id="loading-the-fast-food-dataset">Loading the Fast Food dataset</h1>
 <p>So, we know the data came from a TidyTuesday challenge, but where did they get it from?</p>
-<p>The author of this challenge used some web scraping techniques (that had to be deleted at the request of the publisher) to gather information from <a href="https://fastfoodnutrition.org/" class="uri">https://fastfoodnutrition.org/</a>.</p>
-<p>You can find information about all kinds of food items like this by checking out the site. It can be super useful for making road trips healthier : )</p>
+<p>The author of this challenge used some web scraping techniques (that had to be deleted at the request of the publisher) to gather information from **<a href="https://fastfoodnutrition.org/**" class="uri">https://fastfoodnutrition.org/**</a>. You can find information about all kinds of food items like this by checking out the site. It can be super useful for making road trips healthier : )</p>
 <pre class="r"><code># loading the data from github
 tuesdata_FF &lt;- tidytuesdayR::tt_load(2018, week = 23)</code></pre>
 <pre><code>## 
@@ -44,16 +63,16 @@ fastfood_calories &lt;- tuesdata_FF$fastfood_calories
 
 # looking at restaurants
 #unique(fastfood_calories$restaurant)</code></pre>
-</div>
-<div id="information-for-the-general-public" class="section level1">
-<h1>Information for the general public</h1>
-<p>The purpose of this is to create a simple, yet informative figure that conveys the amount of saturated fats and sugars within each of the common fast food items. Nutrition and neuroscience literature has shown that the factors that impact brain function are the increased sugars and additional saturated fats.</p>
-<p>Below, I have listed out the ways the metrics were calculated. These methods were based on information collected from the Seattle School Districts evaluating healthy lunch items in school children. The PDF can be found <a href="http://district.schoolnutritionandfitness.com/visaliausd/files/SB12Howtocalculatefat.pdf">here</a>.</p>
-<div id="calculating-calories-from-saturated-fats" class="section level2">
-<h2>calculating calories from saturated fats</h2>
-<p><span class="math display">\[(saturated fat (*9) / total calories) * 100 = saturated fat contribution (percent)\]</span></p>
-<p><span class="math display">\[sugar / (total_fat + total_carb + protein + (sodium/100) + (cholesterol/100) * 100) = sugar contribution (percent)\]</span></p>
-<p><span class="math display">\[calories/2000)*100 = daily calories (percent)\]</span></p>
+<h1 id="calculating-calories-from-saturated-fats">Calculating Calories from Saturated Fats</h1>
+<p>$$</p>
+<p>(saturated fat (<em>9) / total calories) </em> 100 = saturated fat contribution (percent)</p>
+<p>$$</p>
+<p>$$</p>
+<p>sugar / (total_fat + total_carb + protein + (sodium/100) + (cholesterol/100) * 100) = sugar contribution (percent)</p>
+<p>$$</p>
+<p>$$</p>
+<p>calories/2000)*100 = daily calories (percent)</p>
+<p>$$</p>
 <pre class="r"><code># percent sat fat of calories
 fastfood_calories &lt;- fastfood_calories %&gt;%
   mutate(perc_sat_fat_cals = ((sat_fat*9)/calories)*100) # matches website - website may be incorrect
@@ -70,12 +89,26 @@ fastfood_calories &lt;- fastfood_calories %&gt;%
 # not using because I&#39;m not sure how imformative it it
 fastfood_calories &lt;- fastfood_calories %&gt;%
   mutate(satfat_sugar_ratio = perc_sat_fat_cals/perc_sugar_cals)</code></pre>
-<p>According to NIH, you should limit saturated fat to less than 10% of your daily calories. So which foods contribute the most saturated fats? To see this, we have to create food categories.</p>
-<p>Fast food items have been broken down into 9 categories: - salad - burger - sandwich - tendies - hot dog - taco - burrito - pizza - other</p>
-<pre class="r"><code>unique(fastfood_calories$salad_cat)</code></pre>
-<pre><code>## Warning: Unknown or uninitialised column: `salad_cat`.</code></pre>
-<pre><code>## NULL</code></pre>
-<pre class="r"><code># creating categories for grouping caloric contributions
+<h1 id="creating-categories">Creating Categories</h1>
+<blockquote>
+<p><em>According to NIH, you should limit saturated fat to less than 10% of your daily calories.</em></p>
+</blockquote>
+<p>To find out which foods contribute the most saturated fats and/or sugars, we have to create food categories for the food items.</p>
+<p><strong>Fast food items have been broken down into 9 categories:</strong></p>
+<ul>
+<li><p>salad</p></li>
+<li><p>burger</p></li>
+<li><p>sandwich</p></li>
+<li><p>tendies</p></li>
+<li><p>hot dog</p></li>
+<li><p>taco</p></li>
+<li><p>burrito</p></li>
+<li><p>pizza</p></li>
+<li><p>other</p></li>
+</ul>
+<pre class="r"><code>#unique(fastfood_calories$salad_cat)
+
+# creating categories for grouping caloric contributions
 fastfood_calories &lt;- fastfood_calories %&gt;%
   mutate(salad_cat = case_when(grepl(&quot;salad&quot;,
                                      item,
@@ -121,35 +154,8 @@ fastfood_calories$salad_cat &lt;- factor(fastfood_calories$salad_cat,
                                                   &quot;burrito&quot;,
                                                   &quot;pizza&quot;,
                                                   &quot;other&quot;))</code></pre>
-</div>
-</div>
-<div id="manipulations-for-visualizations" class="section level1">
-<h1>manipulations for visualizations</h1>
-<p>Below there are several manippulations that need to be made in order to group the data properly for visualizations.</p>
-<pre class="r"><code>fastfood_calories %&gt;%
-  filter(salad_cat %in% c(&quot;sandwich&quot;,
-                          &quot;burger&quot;,
-                          &quot;salad&quot;,
-                          &quot;tendies&quot;,
-                          &quot;taco&quot;))</code></pre>
-<pre><code>## # A tibble: 337 x 23
-##       X1 restaurant item  calories cal_fat total_fat sat_fat trans_fat
-##    &lt;dbl&gt; &lt;fct&gt;      &lt;chr&gt;    &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;
-##  1     1 Mcdonalds  Arti~      380      60         7       2       0  
-##  2     2 Mcdonalds  Sing~      840     410        45      17       1.5
-##  3     3 Mcdonalds  Doub~     1130     600        67      27       3  
-##  4     4 Mcdonalds  Gril~      750     280        31      10       0.5
-##  5     5 Mcdonalds  Cris~      920     410        45      12       0.5
-##  6     6 Mcdonalds  Big ~      540     250        28      10       1  
-##  7     7 Mcdonalds  Chee~      300     100        12       5       0.5
-##  8     8 Mcdonalds  Clas~      510     210        24       4       0  
-##  9     9 Mcdonalds  Doub~      430     190        21      11       1  
-## 10    12 Mcdonalds  Garl~      620     300        34      13       1.5
-## # ... with 327 more rows, and 15 more variables: cholesterol &lt;dbl&gt;,
-## #   sodium &lt;dbl&gt;, total_carb &lt;dbl&gt;, fiber &lt;dbl&gt;, sugar &lt;dbl&gt;, protein &lt;dbl&gt;,
-## #   vit_a &lt;dbl&gt;, vit_c &lt;dbl&gt;, calcium &lt;dbl&gt;, salad &lt;chr&gt;,
-## #   perc_sat_fat_cals &lt;dbl&gt;, perc_sugar_cals &lt;dbl&gt;, perc_daily_cals &lt;dbl&gt;,
-## #   satfat_sugar_ratio &lt;dbl&gt;, salad_cat &lt;fct&gt;</code></pre>
+<h1 id="manipulations-for-visualizations">manipulations for visualizations</h1>
+<p>Below there are several manippulations that need to be made in order to group the data properly for visualizations. In these chunks, the data has has been put into <code>long format</code> to help with visualizations. Additionally, new groups and factor levels had to be added for ordering.</p>
 <pre class="r"><code>summarized_ff_wchain &lt;- fastfood_calories %&gt;%
   filter(perc_sugar_cals &gt;= .01) %&gt;%
   filter(perc_sat_fat_cals &gt;= .01) %&gt;%
@@ -188,7 +194,7 @@ mlt_summarized_ff &lt;- mlt_summarized_ff %&gt;%
                                  variable == &quot;mean_sug&quot; ~ &quot;Sugar&quot;,
                                  variable == &quot;mean_daycals&quot; ~ &quot;Total Daily Calories&quot;))
 
-# cumulative sum for  &lt;- did not use 
+# cumulative sum for  &lt;- do not use 
 mlt_summarized_ff_wchain &lt;- mlt_summarized_ff_wchain %&gt;%
   group_by(variable) %&gt;%
   mutate(label_y = cumsum(value))
@@ -213,13 +219,16 @@ mlt_summarized_ff$proper_name &lt;- factor(mlt_summarized_ff$proper_name,
                                             levels = c(&quot;Saturated Fat&quot;,
                                                      &quot;Total Daily Calories&quot;,
                                                      &quot;Sugar&quot;))</code></pre>
-</div>
-<div id="plotting-the-data" class="section level1">
-<h1>Plotting the data</h1>
+<h1 id="final-plot-the-fast-food-data">Final Plot the Fast Food data</h1>
 <p>Within the data below, I have isolated out the contributions of <strong>saturated fats</strong> and <strong>added sugars</strong> to the <strong>total (daily) caloric contribution</strong> to the food. For example, <em>tendies</em> predominately referes to chicken and includes nuggets, tenders, and strips. You'll notice that they contribute a large amount to the daily calorie count. Why is this? Is it because they come in 60 piece packages or because of large amounts of dense protein.</p>
+<p>How to read the figure below:</p>
+<p>Each food item has a total caloric contribution, this contribution is listed in <code>green</code>. In <code>blue</code> is the amount that sugar contributes to the contribution of the food item. So, from earlier, <strong>tendies</strong> can contribute &gt; 50% to the daily amount of calories needed based on a 2000 calorie diet. Within that, sugars consist of around ~10% of that contribution. It begins to become infomative when you consider <strong>tacos</strong>, and see that they don't contribute as much to the overal caloric intake (which makes sense) but alomost 50% of their contribution is from saturated fats.</p>
+<p><strong>note for update</strong></p>
+<p><strong>i am aware that some numbers do not reflect their perceived contribution. This was somethiing that I could not go back and retroactively fix given the order of operations. Although it may not be percise I think the information is still accurate, and thus informative.</strong></p>
 <pre class="r"><code># plotting the data
 mlt_summarized_ff_wchain %&gt;%
   filter(!salad_cat == &quot;other&quot;) %&gt;%
+  group_by(salad_cat) %&gt;%
   ggplot(aes(x=salad_cat,
              y=value,
              fill=proper_name)) +
@@ -232,8 +241,9 @@ mlt_summarized_ff_wchain %&gt;%
                                  face=&quot;bold&quot;,
                                  color = &quot;black&quot;),
         axis.text.x = element_text(face=&quot;bold&quot;,
-                                   size=10,
-                                   color = &quot;black&quot;),
+                                   size=12,
+                                   color = &quot;black&quot;,
+                                   angle = 75, hjust = 1),
         legend.text = element_text(face=&quot;bold&quot;,
                                    size = 10),
         panel.grid.minor.x = element_blank(),
@@ -249,6 +259,127 @@ mlt_summarized_ff_wchain %&gt;%
        y=&quot;Caloric Percentage (2000 cal/day)&quot;,
        title=&quot;Average Caloric Contribution of American Fast Foods&quot;,
        subtitle = &quot;Insights into the Western Style Diet&quot;,
-       fill=&quot;&quot;) </code></pre>
-<p><img src="/post/final_project_rmd_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+       fill=&quot;&quot;)  +
+  annotate(geom = &quot;text&quot;,
+           x=1,
+           y=.10,
+           label=&quot;9.3&quot;, 
+           color=&quot;white&quot;) +
+    annotate(geom = &quot;text&quot;,
+           x=2,
+           y=.05,
+           label=&quot;6.9&quot;, 
+           color=&quot;white&quot;) +
+    annotate(geom = &quot;text&quot;,
+           x=3,
+           y=.05,
+           label=&quot;6.8&quot;, 
+           color=&quot;white&quot;) +
+    annotate(geom = &quot;text&quot;,
+           x=4,
+           y=.035,
+           label=&quot;4.3&quot;, 
+           color=&quot;white&quot;) +
+    annotate(geom = &quot;text&quot;,
+           x=5,
+           y=.04,
+           label=&quot;7.3&quot;, 
+           color=&quot;white&quot;) +
+    annotate(geom = &quot;text&quot;,
+           x=6,
+           y=.035,
+           label=&quot;4.4&quot;, 
+           color=&quot;white&quot;) +
+      annotate(geom = &quot;text&quot;,
+           x=7,
+           y=.035,
+           label=&quot;3.7&quot;, 
+           color=&quot;white&quot;) +
+    annotate(geom = &quot;text&quot;,
+           x=8,
+           y=.035,
+           label=&quot;3.7&quot;, 
+           color=&quot;white&quot;) +
+    annotate(geom = &quot;text&quot;,
+           x=1,
+           y=.35,
+           label=&quot;19.3&quot;, 
+           color=&quot;black&quot;, angle=90) +
+    annotate(geom = &quot;text&quot;,
+           x=2,
+           y=.35,
+           label=&quot;33.9&quot;, 
+           color=&quot;black&quot;, angle=90) +
+    annotate(geom = &quot;text&quot;,
+           x=3,
+           y=.35,
+           label=&quot;33.1&quot;, 
+           color=&quot;black&quot;, angle=90) +
+    annotate(geom = &quot;text&quot;,
+           x=4,
+           y=.35,
+           label=&quot;40.4&quot;, 
+           color=&quot;black&quot;, angle=90) +
+    annotate(geom = &quot;text&quot;,
+           x=5,
+           y=.35,
+           label=&quot;18.6&quot;, 
+           color=&quot;black&quot;, angle=90) +
+    annotate(geom = &quot;text&quot;,
+           x=6,
+           y=.35,
+           label=&quot;15.7&quot;, 
+           color=&quot;black&quot;, angle=90) +
+      annotate(geom = &quot;text&quot;,
+           x=7,
+           y=.35,
+           label=&quot;26.6&quot;, 
+           color=&quot;black&quot;, angle=90) +
+    annotate(geom = &quot;text&quot;,
+           x=8,
+           y=.35,
+           label=&quot;32.2&quot;, 
+           color=&quot;black&quot;, angle=90) +
+      annotate(geom = &quot;text&quot;,
+           x=1,
+           y=.85,
+           label=&quot;14.2&quot;, 
+           color=&quot;white&quot;, angle=90) +
+    annotate(geom = &quot;text&quot;,
+           x=2,
+           y=.83,
+           label=&quot;19.2&quot;, 
+           color=&quot;white&quot;, angle=90) +
+    annotate(geom = &quot;text&quot;,
+           x=3,
+           y=.85,
+           label=&quot;10.8&quot;, 
+           color=&quot;white&quot;, angle=90) +
+    annotate(geom = &quot;text&quot;,
+           x=4,
+           y=.89,
+           label=&quot;8.17&quot;, 
+           color=&quot;white&quot;, angle=90) +
+    annotate(geom = &quot;text&quot;,
+           x=5,
+           y=.83,
+           label=&quot;20.1&quot;, 
+           color=&quot;white&quot;, angle=90) +
+    annotate(geom = &quot;text&quot;,
+           x=6,
+           y=.83,
+           label=&quot;15.9&quot;, 
+           color=&quot;white&quot;, angle=90) +
+      annotate(geom = &quot;text&quot;,
+           x=7,
+           y=.83,
+           label=&quot;11.8&quot;, 
+           color=&quot;white&quot;, angle=90) +
+    annotate(geom = &quot;text&quot;,
+           x=8,
+           y=.83,
+           label=&quot;14.5&quot;, 
+           color=&quot;white&quot;, angle=90)</code></pre>
+<p><img src="/post/final_project_rmd_files/figure-html/unnamed-chunk-6-1.png" width="1152" /></p>
+</div>
 </div>

@@ -15,24 +15,39 @@ title: 'Lab Brief'
 
 In the original lab, I was interested in showing that California wines are priced higher than Oregon Wines, but are not rated as well. My goal was to show that California wines are overpriced. 
 
-This information was for a general audience, particularly someone is struggling in the wine section at Fred Meyer (bc we all buy wine from Fred Meyer, right?). Example images of the lab can be found below.. 
+This information was for a general audience, particularly someone is struggling in the wine section at Fred Meyer (bc we all buy wine from Fred Meyer, right?). Example images of the lab can be found below..
+
 
 ## Figures from original Lab
 
-
 - California wines are more expensive but doesn't give much insight into the rating of the wine
 
-![Differences in the average quality and pricing of wines from California and Oregon](/images/post/lab_brief_img.jpg)
+![Differences in the average quality and pricing of wines from California and Oregon](/images/post/lab_brief_img.png)
 
-
-- In the reevaluation of the data, let's make a visualization that provides more insight for the general population
+<style>
+div.blue pre { background-color:lightblue; }
+div.blue pre.r { background-color:grey77; }
+</style>
 
 
 # Reevaluating Over Priced West Coast Wines
 
+- In the reevaluation of the data, let's make a visualization that provides more insight for the general population
+
+- **I will also render tables at the bottom that will represent the 4th feature and materials from lab_05 about tables** 
+
+<div class = "blue">
+
 ## Loading the Data
 
-```{r}
+```{r, warning = FALSE, message=FALSE }
+library(tidyverse)
+library(gt)
+library(ggpubr)
+```
+
+
+```{r, warning = FALSE, message=FALSE}
 # loading the tidytuesday data
 
 wine_ratings <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-05-28/winemag-data-130k-v2.csv")
@@ -41,7 +56,8 @@ wine_ratings <- readr::read_csv("https://raw.githubusercontent.com/rfordatascien
 
 ## wrangling the data
 
-The data is already "cleaned" according to the `clean_names` function within the janitor package, so I don't have to do much below apart from assigning and selecting variables of interest for the visualization. 
+The data is already "cleaned" according to the `clean_names` function within the janitor package, so I don't have to do much below apart from assigning and selecting variables of interest for the visualization.
+
 
 
 ```{r}
@@ -105,6 +121,221 @@ wine_ratings_selecvars$rating_class  <- factor(wine_ratings_selecvars$rating_cla
 # something that I did not do here was divide the ratio by the average price and average rating - that may be more informative
 wine_ratings_selecvars <- wine_ratings_selecvars %>%
   mutate(pp_ratio = points/price)
+```
+
+# Recalling the last lab
+
+Remember that information from classification groups for determining  the `rating_class` were made based on information in the previous lab. 
+
+Please visit https://winefolly.com/tips/wine-ratings-explained/ for a refresher!
+
+Below I have remade these same categories for new visualization. 
+
+```{r}
+#names(wine_ratings_selecvars)
+
+#mean(wine_ratings_selecvars$price,
+ #    na.rm=TRUE)
+
+summarized_wine <- wine_ratings_selecvars %>%
+  group_by(rating_class) %>%
+  summarise(mean_price = mean(price,
+                        na.rm = TRUE),
+            mean_rating = mean(points,
+                               na.rm=TRUE))
+
+
+#summarized_wine
+
+wine_ratings_selecvars<- wine_ratings_selecvars %>%
+  mutate(everdaysipp_2 = case_when(price <= 18.7 ~ "Below Average",
+                                 price >= 18.8 &
+                                  price <= 25.8 ~ "About Average",
+                                   price >= 25.9 ~ "Above Average"),
+         fancy_2 = case_when(price <= 18.9 ~ "Below Average",
+                           price >= 19.0 & 
+                             price <= 50.3 ~ "About Average",
+                             price >= 50.4 ~ "Above Average"), 
+         very_fancy_2 = case_when(price <= 50.3 ~ "Below Average", 
+                                price >=50.4 & 
+                                  price <= 80 ~ "About Average",
+                                price >= 81 ~ "Above Average"))
+
+
+wine_ratings_selecvars$everdaysipp <- factor(wine_ratings_selecvars$everdaysipp_2, levels = c("Below Average", 
+                                                                                              "About Average",
+                                                                                              "Above Average"))
+
+wine_ratings_selecvars$fancy<- factor(wine_ratings_selecvars$fancy_2, levels = c("Below Average", 
+                                                                                 "About Average",
+                                                                                 "Above Average"))
+
+wine_ratings_selecvars$very_fancy <- factor(wine_ratings_selecvars$very_fancy_2, levels = c("Below Average", 
+                                                                                            "About Average",
+                                                                                            "Above Average"))
+
+
+#unique(wine_ratings_selecvars$coast)
+
+#wine_ratings_selecvars %>%
+#  names()
+```
+
+
+
+```{r}
+
+
+vfance_2 <- wine_ratings_selecvars %>%
+  filter(rating_class == "Very Fancy") %>%
+  filter(coast %in% c("PNW", "Cali")) %>%
+  filter(!is.na(price)) %>%
+  ggplot(aes(x=rating_class, 
+             y=price,
+             color=very_fancy_2)) +
+  geom_jitter( na.rm = TRUE) +
+  labs(x="Rating Category",
+       y="Price",
+       title= "Very Fancy Wine Prices") +
+  theme(axis.text = element_text(face="bold")) +
+  facet_wrap(~ coast)
+
+
+fance_2 <- wine_ratings_selecvars %>%
+  filter(rating_class == "Fancy") %>%
+  filter(coast %in% c("PNW", "Cali")) %>%
+  filter(!is.na(price)) %>%
+  ggplot(aes(x=rating_class, 
+             y=price,
+             color=fancy_2)) +
+  geom_jitter( na.rm = TRUE) +
+  labs(x="Rating Category",
+       y="Price",
+       title= "Fancy Drinking Wine Prices") +
+  theme(axis.text = element_text(face="bold")) +
+  facet_wrap(~ coast)
+
+
+everyd_sipp_2 <- wine_ratings_selecvars %>%
+  filter(rating_class == "Everyday Sipper") %>%
+  filter(coast %in% c("PNW", "Cali")) %>%
+  filter(!is.na(price)) %>%
+  ggplot(aes(x=rating_class, 
+             y=price,
+             color=everdaysipp_2)) +
+  geom_jitter(na.rm = TRUE) +
+  labs(x="Rating Category",
+       y="Price",
+       title= "Everyday Drinking Wine Prices") +
+  theme(axis.text = element_text(face="bold")) +
+  facet_wrap(~ coast)
+```
+
+```{r, fig.width=13, fig.height=10}
+
+ggpubr::ggarrange(everyd_sipp_2, 
+                  fance_2, 
+                  vfance_2, 
+                  common.legend = TRUE,
+                  labels = "auto", 
+                  legend = c("bottom"), 
+                  ncol = 3,
+                  nrow = 1)
+```
+
+# Tables for the figure above
+
+**This section draws on information and challenges from Lab_05**
+
+One thing that would be useful to know about these visualizations is the amount of wine within each group. Below, I have listed out the total amounts of wine within each group in order to provide the reader with more information about how the groups are set up. 
+
+I found adding the table extremely beneficial because when you look at the raw numbers, it kind of looks like ratios may provide more accurate insights into which region truly has the more overpriced wines.
+
+```{r, include=FALSE}
+
+wine_ratings_selecvars %>%
+  filter(rating_class == "Everyday Sipper") %>%
+  filter(coast %in% c("PNW",
+                      "Cali")) %>%
+  filter(!is.na(price)) %>%
+  group_by(coast) %>%
+  count(everdaysipp_2)
 
 ```
 
+
+
+```{r}
+#wine_ratings_selecvars$province
+
+# table for everyday wines
+
+wine_ratings_selecvars %>%
+  filter(rating_class == "Everyday Sipper") %>%
+  filter(coast %in% c("PNW",
+                      "Cali")) %>%
+  filter(!is.na(price)) %>%
+  group_by(coast, everdaysipp_2) %>%
+  count(everdaysipp_2,
+        mean(price,
+             na.rm=T)) %>%
+  gt(groupname_col = wine_ratings_selecvars$coast) %>% 
+  #tab_row_group(group = coast) %>%
+  fmt_number(columns = 'mean(price, na.rm = T)',
+    decimals = 2,
+    suffixing = TRUE) %>%
+  tab_header(title = md("**Prices of Everday Wines from California and Oregon**"),
+             subtitle = md("Grouped by Proximity to Average Price")) %>%
+  cols_label(everdaysipp_2 = md(" _Price Categorization_"),
+             n = md("_Number of Wines within Category_"),
+             coast = md("_Region_"),
+             'mean(price, na.rm = T)' = md("_Avg Price per Category_"))
+
+# table for fancy wines
+
+wine_ratings_selecvars %>%
+  filter(rating_class == "Fancy") %>%
+  filter(coast %in% c("PNW",
+                      "Cali")) %>%
+  filter(!is.na(price)) %>%
+  group_by(coast, fancy_2) %>%
+  count(fancy_2,
+        mean(price,
+             na.rm=T)) %>%
+  gt(groupname_col = wine_ratings_selecvars$coast) %>% 
+  fmt_number(columns = 'mean(price, na.rm = T)',
+    decimals = 2,
+    suffixing = TRUE) %>%
+  tab_header(title = md("**Prices of Fancy Wine from California and Oregon**"),
+             subtitle = md("Grouped by Proximity to Average Price")) %>%
+  cols_label(fancy_2 = md(" _Price Categorization_"),
+             n = md("_Number of Wines within Category_"),
+             coast = md("_Region_"),
+             'mean(price, na.rm = T)' = md("_Avg Price per Category_"))
+
+
+# table for Very Fancy Wines
+
+wine_ratings_selecvars %>%
+  filter(rating_class == "Very Fancy") %>%
+  filter(coast %in% c("PNW",
+                      "Cali")) %>%
+  filter(!is.na(price)) %>%
+  group_by(coast, very_fancy_2) %>%
+  count(very_fancy_2,
+        mean(price,
+             na.rm=T)) %>%
+  gt(groupname_col = wine_ratings_selecvars$coast) %>% 
+  #tab_row_group(group = coast) %>%
+  fmt_number(columns = 'mean(price, na.rm = T)',
+    decimals = 2,
+    suffixing = TRUE) %>%
+  tab_header(title = md("**Prices of _Very_ Fancy Wine from California and Oregon**"),
+             subtitle = md("Grouped by Proximity to Average Price")) %>%
+  cols_label(very_fancy_2 = md(" _Price Categorization_"),
+             n = md("_Number of Wines within Category_"),
+             coast = md("_Region_"),
+             'mean(price, na.rm = T)' = md("_Avg Price per Category_"))
+```
+
+</div>
